@@ -1,3 +1,4 @@
 module github.com/skyapps-id/edot-test/order-service
 
-go 1.19
+go 1.23
+

@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.53 # Or latest
+    container_name: jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+      - COLLECTOR_OTLP_ENABLED=true       # Enable OTLP receiver
+    ports:
+      - "5775:5775"    # Zipkin Thrift over UDP
+      - "6831:6831"    # Jaeger agent over UDP
+      - "6832:6832"    # Jaeger agent over UDP
+      - "5778:5778"    # Admin port
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # Jaeger collector (HTTP ingestion for Jaeger UI)
+      - "4317:4317"    # OTLP/gRPC (This is what you want)
+    networks:
+      - dev-network-edot
+
+  user-postgres:
+    image: postgres
+    container_name: user-postgres
+    ports:
+      - 54321:5432
+    environment:
+      POSTGRES_DB: user-service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      - dev-network-edot
+    volumes:
+      - ./.data/user-postgres:/var/lib/postgresql/data
+
+
+networks:
+  # Create a new Docker network.
+  dev-network-edot:
+    driver: bridge
