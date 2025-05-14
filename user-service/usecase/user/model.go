@@ -1,7 +1,5 @@
 package user
 
-import "github.com/google/uuid"
-
 type RegisterRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
@@ -10,5 +8,5 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	UUID uuid.UUID `json:"uuid"`
+	Email string `json:"email"`
 }

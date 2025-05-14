@@ -10,7 +10,7 @@ import (
 )
 
 type User interface {
-	CreateOrUpdate(ctx context.Context, user *entity.User) (err error)
+	CreateOrUpdate(ctx context.Context, user entity.User) (err error)
 	FindByUUID(ctx context.Context, uuid uuid.UUID) (user entity.User, err error)
 	FindByEmailOrPhone(ctx context.Context, email, phone string) (entity.User, error)
 }
@@ -27,11 +27,13 @@ func NewUserRepository(database *gorm.DB) User {
 	}
 }
 
-func (r *user) CreateOrUpdate(ctx context.Context, user *entity.User) (err error) {
-	return r.database.WithContext(ctx).Clauses(clause.OnConflict{
+func (r *user) CreateOrUpdate(ctx context.Context, user entity.User) (err error) {
+	err = r.database.WithContext(ctx).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "email"}},
 		DoUpdates: clause.AssignmentColumns([]string{"phone", "password", "name"}),
 	}).Create(&user).Error
+
+	return
 }
 
 func (r *user) FindByUUID(ctx context.Context, uuid uuid.UUID) (user entity.User, err error) {

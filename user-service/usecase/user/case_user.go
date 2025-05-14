@@ -8,11 +8,10 @@ import (
 )
 
 func (uc *usecase) Register(ctx context.Context, req RegisterRequest) (resp RegisterResponse, err error) {
-	tracer := otel.Tracer("UserUsecase")
-	ctx, span := tracer.Start(ctx, "Register")
+	ctx, span := otel.Tracer("usecase").Start(ctx, "UserUsecase.Register")
 	defer span.End()
 
-	user := &entity.User{
+	user := entity.User{
 		Name:     req.Name,
 		Email:    req.Email,
 		Phone:    req.Phone,
@@ -21,7 +20,7 @@ func (uc *usecase) Register(ctx context.Context, req RegisterRequest) (resp Regi
 
 	err = uc.userRepository.CreateOrUpdate(ctx, user)
 
-	resp.UUID = user.UUID
+	resp.Email = user.Email
 
 	return
 }
