@@ -27,7 +27,7 @@ type product struct {
 	database  *gorm.DB
 }
 
-func NewUserRepository(database *gorm.DB) Product {
+func NewProductRepository(database *gorm.DB) Product {
 	return &product{
 		tableName: entity.Product{}.TableName(),
 		database:  database,
@@ -41,6 +41,13 @@ func (r *product) CreateOrUpdate(ctx context.Context, product entity.Product) (e
 			"name", "description", "price", "image_url",
 		}),
 	}).Create(&product).Error
+	if err != nil {
+		logger.Log.Error("Error in ProductRepository.CreateOrUpdate",
+			zap.Error(err),
+			zap.String("module", "ProductRepository"),
+			zap.String("method", "CreateOrUpdate"),
+		)
+	}
 
 	return
 }

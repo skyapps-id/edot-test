@@ -14,7 +14,7 @@ func (uc *usecase) Craete(ctx context.Context, req CreateProductRequest) (resp C
 	ctx, span := tracer.Define().Start(ctx, "ProductUsecase.Create")
 	defer span.End()
 
-	err = uc.userRepository.CreateOrUpdate(ctx, entity.Product{
+	err = uc.productRepository.CreateOrUpdate(ctx, entity.Product{
 		Name:        req.Name,
 		SKU:         req.SKU,
 		Price:       req.Price,

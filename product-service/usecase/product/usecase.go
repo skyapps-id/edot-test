@@ -14,13 +14,13 @@ type ProductUsecase interface {
 }
 
 type usecase struct {
-	cfg            config.Config
-	userRepository repository.Product
+	cfg               config.Config
+	productRepository repository.Product
 }
 
-func NewUsecase(cfg config.Config, userRepository repository.Product) ProductUsecase {
+func NewUsecase(cfg config.Config, productRepository repository.Product) ProductUsecase {
 	return &usecase{
-		cfg:            cfg,
-		userRepository: userRepository,
+		cfg:               cfg,
+		productRepository: productRepository,
 	}
 }
