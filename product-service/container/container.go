@@ -20,10 +20,10 @@ func Setup() *Container {
 	database := driver.NewGormDatabase(config)
 
 	// Repository
-	repo_user := repository.NewProductRepository(database)
+	repo_product := repository.NewProductRepository(database)
 
 	// Usecase
-	productUsecase := product.NewUsecase(config, repo_user)
+	productUsecase := product.NewUsecase(config, repo_product)
 
 	return &Container{
 		Config:         config,
