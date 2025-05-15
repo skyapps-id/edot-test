@@ -9,9 +9,10 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func InitTracer() func(context.Context) error {
+func InitTracer(serviceName string) func(context.Context) error {
 	ctx := context.Background()
 
 	exp, err := otlptracegrpc.New(ctx,
@@ -26,10 +27,14 @@ func InitTracer() func(context.Context) error {
 		sdktrace.WithBatcher(exp),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceName("echo-server"),
+			semconv.ServiceName(serviceName),
 		)),
 	)
 
 	otel.SetTracerProvider(tp)
 	return tp.Shutdown
+}
+
+func Define() trace.Tracer {
+	return otel.Tracer("github.com/skyapps-id/edot-test")
 }

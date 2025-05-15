@@ -15,6 +15,7 @@ import (
 	"github.com/skyapps-id/edot-test/user-service/container"
 	"github.com/skyapps-id/edot-test/user-service/pkg/logger"
 	"github.com/skyapps-id/edot-test/user-service/pkg/tracer"
+	pkgValidator "github.com/skyapps-id/edot-test/user-service/pkg/validator"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
@@ -23,7 +24,7 @@ func StartHTTP(container *container.Container) {
 		panic("container is nil")
 	}
 
-	tracer := tracer.InitTracer()
+	tracer := tracer.InitTracer(container.Config.AppName)
 	defer tracer(context.Background())
 
 	if err := logger.Init(); err != nil {
@@ -38,14 +39,18 @@ func StartHTTP(container *container.Container) {
 
 	server := echo.New()
 
-	server.Use(otelecho.Middleware("echo-server"))
+	server.Use(otelecho.Middleware(container.Config.AppName))
+	server.Use(TraceIDMiddleware)
 	server.Use(mw.Recover())
 	server.Use(MiddlewareLoggerWithTrace(logger.Log))
+
+	server.HTTPErrorHandler = ErrorHandler()
+	server.Validator = &DataValidator{ValidatorData: pkgValidator.SetupValidator()}
 
 	Router(server, container)
 
 	go func() {
-		if err := server.Start(":8080"); err != nil && err != http.ErrServerClosed {
+		if err := server.Start(fmt.Sprint(":", container.Config.Port)); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("shutting down the server: %v", err)
 		}
 	}()
