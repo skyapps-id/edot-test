@@ -24,7 +24,7 @@ func StartHTTP(container *container.Container) {
 		panic("container is nil")
 	}
 
-	tracer := tracer.InitTracer(container.Config.AppName)
+	tracer := tracer.InitTracer(container.Config.HostOTLP, container.Config.AppName)
 	defer tracer(context.Background())
 
 	if err := logger.Init(); err != nil {

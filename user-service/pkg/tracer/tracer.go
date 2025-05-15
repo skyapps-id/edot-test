@@ -12,11 +12,11 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func InitTracer(serviceName string) func(context.Context) error {
+func InitTracer(host, serviceName string) func(context.Context) error {
 	ctx := context.Background()
 
 	exp, err := otlptracegrpc.New(ctx,
-		otlptracegrpc.WithEndpoint("localhost:4317"), // Jaeger OTLP gRPC port
+		otlptracegrpc.WithEndpoint("localhost:4317"),
 		otlptracegrpc.WithInsecure(),
 	)
 	if err != nil {
@@ -36,5 +36,5 @@ func InitTracer(serviceName string) func(context.Context) error {
 }
 
 func Define() trace.Tracer {
-	return otel.Tracer("github.com/skyapps-id/edot-test")
+	return otel.Tracer("github.com/skyapps-id/edot-test/user-service")
 }
