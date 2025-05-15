@@ -8,8 +8,14 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+type OrderItemsRequest struct {
+	ProductUUID uuid.UUID `json:"product_uuid" validate:"required"`
+	Quantity    int       `json:"quantity" validate:"required"`
+}
+
 type CreateOrderRequest struct {
-	UserUUID uuid.UUID `json:"user_uuid"`
+	UserUUID   uuid.UUID           `json:"user_uuid"`
+	Orderitems []OrderItemsRequest `json:"order_items" validate:"required"`
 }
 
 type CreateOrderResponse struct {

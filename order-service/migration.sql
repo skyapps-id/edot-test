@@ -3,8 +3,8 @@ CREATE TABLE orders (
     order_id        TEXT NOT NULL,
     user_uuid       UUID NOT NULL,
     status          TEXT NOT NULL,
-    total_quantity  INTEGER NOT NULL DEFAULT 0,
     total_items     INTEGER NOT NULL DEFAULT 0,
+    total_price     INTEGER NOT NULL DEFAULT 0,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );

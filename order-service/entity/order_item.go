@@ -3,7 +3,7 @@ package entity
 import "github.com/google/uuid"
 
 type OrderItem struct {
-	UUID          uuid.UUID `gorm:"column:uuid" json:"uuid"`
+	UUID          uuid.UUID `gorm:"column:uuid;->" json:"uuid"`
 	OrderUUID     uuid.UUID `gorm:"column:order_uuid" json:"order_uuid"`
 	ProductUUID   uuid.UUID `gorm:"column:product_uuid" json:"product_uuid"`
 	StoreUUID     uuid.UUID `gorm:"column:store_uuid" json:"store_uuid"`

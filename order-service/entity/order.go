@@ -7,7 +7,7 @@ import (
 )
 
 type Order struct {
-	UUID       uuid.UUID `gorm:"column:uuid" json:"uuid"`
+	UUID       uuid.UUID `gorm:"column:uuid;->" json:"uuid"`
 	OrderID    string    `gorm:"column:order_id" json:"order_id"`
 	UserUUID   uuid.UUID `gorm:"column:user_uuid" json:"user_uuid"`
 	Status     string    `gorm:"column:status" json:"status"`

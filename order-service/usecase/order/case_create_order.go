@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/skyapps-id/edot-test/order-service/entity"
 	"github.com/skyapps-id/edot-test/order-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
@@ -15,9 +15,13 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 	ctx, span := tracer.Define().Start(ctx, "OrderUsecase.Create")
 	defer span.End()
 
+	const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	id, _ := gonanoid.Generate(alphabet, 16)
 	order := entity.Order{
-		UserUUID:   uuid.New(),
+		UserUUID:   req.UserUUID,
 		Status:     "checkout",
+		OrderID:    "TX-" + id,
 		TotalItems: 1,
 		TotalPrice: 1,
 	}
