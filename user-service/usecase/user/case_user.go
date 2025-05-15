@@ -8,6 +8,7 @@ import (
 
 	"github.com/skyapps-id/edot-test/user-service/entity"
 	"github.com/skyapps-id/edot-test/user-service/pkg/apperror"
+	"github.com/skyapps-id/edot-test/user-service/pkg/auth"
 	"github.com/skyapps-id/edot-test/user-service/pkg/tracer"
 	"gorm.io/gorm"
 )
@@ -26,11 +27,16 @@ func (uc *usecase) Register(ctx context.Context, req RegisterRequest) (resp Regi
 		return
 	}
 
+	hashed, err := auth.HashPassword(req.Password)
+	if err != nil {
+		err = apperror.New(http.StatusUnprocessableEntity, err)
+	}
+
 	err = uc.userRepository.CreateOrUpdate(ctx, entity.User{
 		Name:     req.Name,
 		Email:    req.Email,
 		Phone:    req.Phone,
-		Password: req.Password,
+		Password: hashed,
 	})
 
 	resp.Email = req.Email
