@@ -46,6 +46,20 @@ services:
     volumes:
       - ./.data/product-postgres:/var/lib/postgresql/data
 
+  shop-warehouse-postgres:
+    image: postgres
+    container_name: shop-warehouse-postgres
+    ports:
+      - 54323:5432
+    environment:
+      POSTGRES_DB: shop-warehouse-service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      - dev-network-edot
+    volumes:
+      - ./.data/shop-warehouse-postgres:/var/lib/postgresql/data
+
 
 networks:
   # Create a new Docker network.
