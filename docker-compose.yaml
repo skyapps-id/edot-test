@@ -60,6 +60,20 @@ services:
     volumes:
       - ./.data/shop-warehouse-postgres:/var/lib/postgresql/data
 
+  order-postgres:
+    image: postgres
+    container_name: order-postgres
+    ports:
+      - 54323:5432
+    environment:
+      POSTGRES_DB: order-service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      - dev-network-edot
+    volumes:
+      - ./.data/order-postgres:/var/lib/postgresql/data
+
 
 networks:
   # Create a new Docker network.
