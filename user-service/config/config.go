@@ -1,5 +1,12 @@
 package config
 
+import (
+	"os"
+	"strconv"
+
+	"github.com/joho/godotenv"
+)
+
 type Config struct {
 	AppName string
 	Port    string
@@ -8,10 +15,17 @@ type Config struct {
 }
 
 func Load() Config {
+	err := godotenv.Load()
+	if err != nil {
+		panic("No .env file found or failed to load it")
+	}
+
+	dbDebug, _ := strconv.ParseBool(os.Getenv("DB_DEBUG"))
+
 	return Config{
-		AppName: "user-service",
-		Port:    "8080",
-		DbUrl:   "postgres://root:root@localhost:54321/user-service?sslmode=disable",
-		DbDebug: true,
+		AppName: os.Getenv("APP_NAME"),
+		Port:    os.Getenv("PORT"),
+		DbUrl:   os.Getenv("DB_URL"),
+		DbDebug: dbDebug,
 	}
 }
