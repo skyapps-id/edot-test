@@ -23,3 +23,20 @@ func (h *handler) Register(c echo.Context) (err error) {
 
 	return response.ResponseSuccess(c, resp)
 }
+
+func (h *handler) Login(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req user.LoginRequest
+
+	err = validator.Validate(c, &req)
+	if err != nil {
+		return echo.NewHTTPError(400, err.Error())
+	}
+
+	resp, err := h.userUsecase.Login(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.ResponseSuccess(c, resp)
+}

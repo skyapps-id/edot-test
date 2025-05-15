@@ -7,6 +7,7 @@ import (
 
 type UserHandler interface {
 	Register(c echo.Context) (err error)
+	Login(c echo.Context) (err error)
 }
 
 type handler struct {

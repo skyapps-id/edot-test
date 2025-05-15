@@ -43,3 +43,33 @@ func (uc *usecase) Register(ctx context.Context, req RegisterRequest) (resp Regi
 
 	return
 }
+
+func (uc *usecase) Login(ctx context.Context, req LoginRequest) (resp LoginResponse, err error) {
+	ctx, span := tracer.Define().Start(ctx, "UserUsecase.Login")
+	defer span.End()
+
+	user, err := uc.userRepository.FindByEmailOrPhone(ctx, req.ID, req.ID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = apperror.New(http.StatusBadRequest, fmt.Errorf("user not found"))
+		return
+	}
+	if err != nil {
+		err = apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("fail to get user"))
+		return
+	}
+
+	valid := auth.CheckPassword(user.Password, req.Password)
+	if !valid {
+		err = apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("wrong password"))
+	}
+
+	token, err := auth.GenerateJWT(user.UUID.String(), uc.cfg.JwtSecret)
+	if err != nil {
+		err = apperror.New(http.StatusUnprocessableEntity, err)
+	}
+
+	resp.UUID = user.UUID
+	resp.Token = token
+
+	return
+}

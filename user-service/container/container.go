@@ -23,7 +23,7 @@ func Setup() *Container {
 	repo_user := repository.NewUserRepository(database)
 
 	// Usecase
-	userUsecase := user.NewUsecase(repo_user)
+	userUsecase := user.NewUsecase(config, repo_user)
 
 	return &Container{
 		Config:      config,
