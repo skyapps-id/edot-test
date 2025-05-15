@@ -11,7 +11,7 @@ import (
 )
 
 func (uc *usecase) Gets(ctx context.Context, req GetProductsRequest) (resp GetProductsResponse, err error) {
-	ctx, span := tracer.Define().Start(ctx, "ProductUsecase.Create")
+	ctx, span := tracer.Define().Start(ctx, "ProductUsecase.Gets")
 	defer span.End()
 
 	products, count, err := uc.userRepository.GetAll(
@@ -25,6 +25,21 @@ func (uc *usecase) Gets(ctx context.Context, req GetProductsRequest) (resp GetPr
 
 	resp.List = uc.productsMapper(products)
 	resp.Pagination = util.Pagination(int(req.Page.Int64), int(req.PerPage.Int64), count)
+
+	return
+}
+
+func (uc *usecase) Get(ctx context.Context, req GetProductRequest) (resp GetProductResponse, err error) {
+	ctx, span := tracer.Define().Start(ctx, "ProductUsecase.Get")
+	defer span.End()
+
+	product, err := uc.userRepository.FindByUUID(ctx, req.UUID)
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get product"))
+		return
+	}
+
+	resp = uc.productMapper(product)
 
 	return
 }
