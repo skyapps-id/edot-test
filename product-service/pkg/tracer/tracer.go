@@ -36,5 +36,5 @@ func InitTracer(host, serviceName string) func(context.Context) error {
 }
 
 func Define() trace.Tracer {
-	return otel.Tracer("github.com/skyapps-id/edot-test/user-service")
+	return otel.Tracer("github.com/skyapps-id/edot-test/product-service")
 }
