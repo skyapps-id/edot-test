@@ -14,4 +14,5 @@ func Router(server *echo.Echo, container *container.Container) {
 
 	server.GET("/", health.Health)
 	server.POST("/products", product.Create)
+	server.GET("/products", product.Gets)
 }

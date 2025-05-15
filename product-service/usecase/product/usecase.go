@@ -9,6 +9,7 @@ import (
 
 type ProductUsecase interface {
 	Craete(ctx context.Context, req CreateProductRequest) (resp CreateProductResponse, err error)
+	Gets(ctx context.Context, req GetProductsRequest) (resp GetProductsResponse, err error)
 }
 
 type usecase struct {

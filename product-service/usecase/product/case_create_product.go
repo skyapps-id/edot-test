@@ -2,8 +2,11 @@ package product
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
 	"github.com/skyapps-id/edot-test/product-service/entity"
+	"github.com/skyapps-id/edot-test/product-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/product-service/pkg/tracer"
 )
 
@@ -17,6 +20,10 @@ func (uc *usecase) Craete(ctx context.Context, req CreateProductRequest) (resp C
 		Price:       req.Price,
 		Description: req.Description,
 	})
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to save product"))
+		return
+	}
 
 	resp.Name = req.Name
 	resp.SKU = req.SKU
