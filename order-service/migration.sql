@@ -19,6 +19,7 @@ CREATE TABLE order_items (
     product_sku     TEXT NOT NULL,
     quantity        INTEGER NOT NULL,
     price           NUMERIC(12, 2) NOT NULL,
+    total_price     NUMERIC(12, 2) NOT NULL,
 
     CONSTRAINT fk_order FOREIGN KEY (order_uuid) REFERENCES orders(uuid)
 );

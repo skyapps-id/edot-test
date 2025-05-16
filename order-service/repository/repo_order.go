@@ -14,7 +14,7 @@ import (
 )
 
 type Order interface {
-	Create(ctx context.Context, order entity.Order) (err error)
+	Create(ctx context.Context, order entity.Order, orderItems []entity.OrderItem) (err error)
 	GetAll(ctx context.Context, name null.String, limit, offset int, sort string) (order []entity.Order, count int64, err error)
 	FindByUUID(ctx context.Context, uuid uuid.UUID) (order entity.Order, err error)
 	FindBySKU(ctx context.Context, sku string) (order entity.Order, err error)
@@ -22,26 +22,42 @@ type Order interface {
 }
 
 type order struct {
-	tableName string
-	database  *gorm.DB
+	tableName  string
+	tableName1 string
+	database   *gorm.DB
 }
 
 func NewOrderRepository(database *gorm.DB) Order {
 	return &order{
-		tableName: entity.Order{}.TableName(),
-		database:  database,
+		tableName:  entity.Order{}.TableName(),
+		tableName1: entity.OrderItem{}.TableName(),
+		database:   database,
 	}
 }
 
-func (r *order) Create(ctx context.Context, order entity.Order) (err error) {
-	err = r.database.WithContext(ctx).Create(&order).Error
+func (r *order) Create(ctx context.Context, order entity.Order, orderItems []entity.OrderItem) (err error) {
+	tx := r.database.WithContext(ctx).Begin()
+	err = tx.Table(r.tableName).Create(&order).Error
 	if err != nil {
-		logger.Log.Error("Error in OrderRepository.CreateOrUpdate",
+		logger.Log.Error("Error in OrderRepository.Create",
 			zap.Error(err),
 			zap.String("module", "OrderRepository"),
-			zap.String("method", "CreateOrUpdate"),
+			zap.String("method", "CreateOrder"),
 		)
+		tx.Rollback()
 	}
+
+	err = tx.Table(r.tableName1).Create(&orderItems).Error
+	if err != nil {
+		logger.Log.Error("Error in OrderRepository.Create",
+			zap.Error(err),
+			zap.String("module", "OrderRepository"),
+			zap.String("method", "CreateOrderItems"),
+		)
+		tx.Rollback()
+	}
+
+	tx.Commit()
 
 	return
 }

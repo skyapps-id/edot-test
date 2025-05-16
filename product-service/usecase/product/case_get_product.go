@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/product-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/product-service/pkg/tracer"
 	util "github.com/skyapps-id/edot-test/product-service/pkg/utils"
@@ -44,7 +45,7 @@ func (uc *usecase) Get(ctx context.Context, req GetProductRequest) (resp GetProd
 	return
 }
 
-func (uc *usecase) GetByUUIDs(ctx context.Context, req GetProductByUUIDsRequest) (resp []GetProductResponse, err error) {
+func (uc *usecase) GetByUUIDs(ctx context.Context, req GetProductByUUIDsRequest) (resp map[uuid.UUID]GetProductResponse, err error) {
 	ctx, span := tracer.Define().Start(ctx, "ProductUsecase.GetByUUIDs")
 	defer span.End()
 

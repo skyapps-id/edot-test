@@ -12,6 +12,7 @@ type OrderItem struct {
 	ProductName   string    `gorm:"column:product_name" json:"product_name"`
 	ProductSKU    string    `gorm:"column:product_sku" json:"product_sku"`
 	Price         float64   `gorm:"column:price" json:"price"`
+	TotalPrice    float64   `gorm:"column:total_price" json:"total_price"`
 }
 
 func (OrderItem) TableName() string {

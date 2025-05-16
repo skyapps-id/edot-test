@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/skyapps-id/edot-test/order-service/entity"
 	"github.com/skyapps-id/edot-test/order-service/pkg/apperror"
@@ -15,35 +16,41 @@ import (
 func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp CreateOrderResponse, err error) {
 	ctx, span := tracer.Define().Start(ctx, "OrderUsecase.Create")
 	defer span.End()
-	const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 	products, err := uc.productWrapper.GetProducts(ctx, product_service.ProductRequest{
 		Uuids: req.GetProductUUIDs(),
 	})
 
+	const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	id, _ := gonanoid.Generate(alphabet, 16)
 	order := entity.Order{
-		UserUUID:   req.UserUUID,
-		Status:     "checkout",
-		OrderID:    "TX-" + id,
-		TotalItems: 1,
-		TotalPrice: 1,
+		UUID:     uuid.New(),
+		UserUUID: req.UserUUID,
+		Status:   "checkout",
+		OrderID:  "TX-" + id,
 	}
 
 	orderItems := []entity.OrderItem{}
-	for _, row := range products {
+	totalPrice := float64(0)
+	totaItem := 0
+	for _, row := range req.Orderitems {
+		product := products[row.ProductUUID]
+		totalPriceItem := product.Price * float64(row.Quantity)
 		orderItems = append(orderItems, entity.OrderItem{
-			ProductUUID: row.UUID,
-			ProductName: row.Name,
-			ProductSKU:  row.SKU,
-			Quantity:    0,
-			Price:       row.Price,
+			OrderUUID:   order.UUID,
+			ProductUUID: product.UUID,
+			ProductName: product.Name,
+			ProductSKU:  product.SKU,
+			Quantity:    row.Quantity,
+			Price:       product.Price,
+			TotalPrice:  totalPriceItem,
 		})
+		totalPrice += totalPriceItem
+		totaItem += row.Quantity
 	}
+	order.TotalItems = totaItem
 
-	fmt.Println(orderItems)
-
-	err = uc.orderRepository.Create(ctx, order)
+	err = uc.orderRepository.Create(ctx, order, orderItems)
 	if err != nil {
 		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to save order"))
 		return

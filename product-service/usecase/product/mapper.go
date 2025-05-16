@@ -1,6 +1,7 @@
 package product
 
 import (
+	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/product-service/entity"
 )
 
@@ -32,7 +33,8 @@ func (uc *usecase) productMapper(result entity.Product) (resp GetProductResponse
 	}
 }
 
-func (uc *usecase) productByUUidsMapper(results []entity.Product) (resp []GetProductResponse) {
+func (uc *usecase) productByUUidsMapper(results []entity.Product) (resp map[uuid.UUID]GetProductResponse) {
+	resp = make(map[uuid.UUID]GetProductResponse)
 	for _, row := range results {
 		product := GetProductResponse{
 			UUID:      row.UUID,
@@ -43,7 +45,8 @@ func (uc *usecase) productByUUidsMapper(results []entity.Product) (resp []GetPro
 			CreatedAt: row.CreatedAt,
 			UpdatedAt: row.UpdatedAt,
 		}
-		resp = append(resp, product)
+		resp[row.UUID] = product
 	}
+
 	return
 }

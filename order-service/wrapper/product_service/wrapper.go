@@ -5,13 +5,15 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/order-service/config"
 	"github.com/skyapps-id/edot-test/order-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/order-service/pkg/http_client"
+	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
 )
 
 type ProductServiceWrapper interface {
-	GetProducts(ctx context.Context, req ProductRequest) (resp []ProductResponse, err error)
+	GetProducts(ctx context.Context, req ProductRequest) (resp map[uuid.UUID]ProductResponse, err error)
 }
 
 type wrapper struct {
@@ -30,7 +32,10 @@ func (w *wrapper) Setup() ProductServiceWrapper {
 	return w
 }
 
-func (w *wrapper) GetProducts(ctx context.Context, req ProductRequest) (resp []ProductResponse, err error) {
+func (w *wrapper) GetProducts(ctx context.Context, req ProductRequest) (resp map[uuid.UUID]ProductResponse, err error) {
+	ctx, span := tracer.Define().Start(ctx, "ProductServiceWrapper.GetProducts")
+	defer span.End()
+
 	body, status, err := w.httpClient.Post(ctx, "/internal/products/uuids", http.Header{}, req.Json())
 	if err != nil {
 		err = apperror.New(status, err)
