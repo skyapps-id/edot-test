@@ -9,6 +9,7 @@ import (
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/skyapps-id/edot-test/order-service/entity"
 	"github.com/skyapps-id/edot-test/order-service/pkg/apperror"
+	"github.com/skyapps-id/edot-test/order-service/pkg/constant"
 	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
 	"github.com/skyapps-id/edot-test/order-service/wrapper/product_service"
 	"github.com/skyapps-id/edot-test/order-service/wrapper/shop_warehouse_service"
@@ -34,8 +35,7 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 		return
 	}
 
-	const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	id, _ := gonanoid.Generate(alphabet, 16)
+	id, _ := gonanoid.Generate(constant.ALPHABETNUMBER, 16)
 	order := entity.Order{
 		UUID:     uuid.New(),
 		UserUUID: req.UserUUID,
