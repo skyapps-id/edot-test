@@ -6,16 +6,17 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/pkg/tracer"
 	"gorm.io/gorm"
 )
 
-func (uc *usecase) GetWarehouseProduct(ctx context.Context, req GetWarehouseProductRequest) (resp GetWarehouseProductResponse, err error) {
+func (uc *usecase) GetMaxQuantityByProductUUIDs(ctx context.Context, req GetWarehouseProductRequest) (resp map[uuid.UUID]GetWarehouseProductResponse, err error) {
 	ctx, span := tracer.Define().Start(ctx, "WarehouseUsecase.GetWarehouseProduct")
 	defer span.End()
 
-	warehouseProduct, err := uc.warehouseProductRepository.GetMaxStockByProductUUID(ctx, req.UUID)
+	warehouseProduct, err := uc.warehouseProductRepository.GetMaxQuantityByProductUUIDs(ctx, req.ProductUUIDs)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		err = apperror.New(http.StatusNotFound, fmt.Errorf("shop not found"))
 		return
@@ -25,7 +26,7 @@ func (uc *usecase) GetWarehouseProduct(ctx context.Context, req GetWarehouseProd
 		return
 	}
 
-	resp = uc.warehouseProductMapper(warehouseProduct)
+	resp = uc.warehouseProductMapper(req, warehouseProduct)
 
 	return
 }

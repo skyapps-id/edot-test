@@ -10,7 +10,7 @@ type WarehouseHandler interface {
 	Gets(c echo.Context) (err error)
 	Get(c echo.Context) (err error)
 	CreateWarehouseProduct(c echo.Context) (err error)
-	GetWarehouseProduct(c echo.Context) (err error)
+	GetMaxQuantityByProductUUIDs(c echo.Context) (err error)
 }
 
 type handler struct {

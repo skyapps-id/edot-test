@@ -1,10 +1,11 @@
 package warehouse
 
 import (
+	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/entity"
 )
 
-func (uc *usecase) warehousesMapper(results []entity.Warehouse) (data []DataWarehouses) {
+func (uc *usecase) warehousesMapper(results []entity.Warehouse) (resp []DataWarehouses) {
 	for _, row := range results {
 		warehouse := DataWarehouses{
 			UUID:      row.UUID,
@@ -12,12 +13,12 @@ func (uc *usecase) warehousesMapper(results []entity.Warehouse) (data []DataWare
 			CreatedAt: row.CreatedAt,
 			UpdatedAt: row.UpdatedAt,
 		}
-		data = append(data, warehouse)
+		resp = append(resp, warehouse)
 	}
 	return
 }
 
-func (uc *usecase) warehouseMapper(result entity.Warehouse) (data GetWarehouseResponse) {
+func (uc *usecase) warehouseMapper(result entity.Warehouse) (resp GetWarehouseResponse) {
 	return GetWarehouseResponse{
 		UUID:      result.UUID,
 		Name:      result.Name,
@@ -27,12 +28,24 @@ func (uc *usecase) warehouseMapper(result entity.Warehouse) (data GetWarehouseRe
 	}
 }
 
-func (uc *usecase) warehouseProductMapper(result entity.WarehouseProduct) (data GetWarehouseProductResponse) {
-	return GetWarehouseProductResponse{
-		UUID:          result.UUID,
-		WarehouseUUID: result.WarehouseUUID,
-		ProductUUID:   result.ProductUUID,
-		Quantity:      result.Quantity,
-		UpdatedAt:     result.UpdatedAt,
+func (uc *usecase) warehouseProductMapper(req GetWarehouseProductRequest, results []entity.WarehouseProduct) (resp map[uuid.UUID]GetWarehouseProductResponse) {
+	resp = make(map[uuid.UUID]GetWarehouseProductResponse)
+	mapData := make(map[uuid.UUID]entity.WarehouseProduct)
+
+	for _, row := range results {
+		mapData[row.ProductUUID] = row
 	}
+
+	for _, productUUID := range req.ProductUUIDs {
+		if record, ok := mapData[productUUID]; ok {
+			resp[productUUID] = GetWarehouseProductResponse{
+				UUID:          record.UUID,
+				WarehouseUUID: record.WarehouseUUID,
+				ProductUUID:   record.ProductUUID,
+				Quantity:      record.Quantity,
+			}
+		}
+	}
+
+	return
 }

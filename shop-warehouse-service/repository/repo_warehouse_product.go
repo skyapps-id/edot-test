@@ -12,7 +12,7 @@ import (
 
 type WarehouseProduct interface {
 	Create(ctx context.Context, warehouseProduct entity.WarehouseProduct) (err error)
-	GetMaxStockByProductUUID(ctx context.Context, productUUID uuid.UUID) (warehouse entity.WarehouseProduct, err error)
+	GetMaxQuantityByProductUUIDs(ctx context.Context, productUUIDs []uuid.UUID) (warehouse []entity.WarehouseProduct, err error)
 }
 
 type warehouseProduct struct {
@@ -39,11 +39,20 @@ func (r *warehouseProduct) Create(ctx context.Context, warehouseProduct entity.W
 	return
 }
 
-func (r *warehouseProduct) GetMaxStockByProductUUID(ctx context.Context, productUUID uuid.UUID) (warehouse entity.WarehouseProduct, err error) {
-	err = r.database.WithContext(ctx).Where("warehouse_products.product_uuid = ?", productUUID).
+func (r *warehouseProduct) GetMaxQuantityByProductUUIDs(ctx context.Context, productUUIDs []uuid.UUID) (warehouse []entity.WarehouseProduct, err error) {
+	err = r.database.WithContext(ctx).
+		Select(`
+			DISTINCT ON (warehouse_products.product_uuid)
+			warehouse_products.uuid,
+			warehouse_products.warehouse_uuid,
+			warehouse_products.product_uuid,
+			warehouse_products.quantity,
+			warehouse_products.updated_at
+		`).
 		Joins("JOIN warehouses ON warehouses.uuid = warehouse_products.warehouse_uuid AND warehouses.active = true").
-		Order("quantity DESC").
-		First(&warehouse).Error
+		Where("warehouse_products.product_uuid IN ?", productUUIDs).
+		Order("warehouse_products.product_uuid, warehouse_products.quantity DESC").
+		Find(&warehouse).Error
 	if err != nil {
 		logger.Log.Error("Error in WarehouseProductRepository.GetMaxStockByProductUUID",
 			zap.Error(err),

@@ -3,6 +3,7 @@ package warehouse
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/config"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/repository"
 )
@@ -12,7 +13,7 @@ type WarehouseUsecase interface {
 	Gets(ctx context.Context, req GetWarehousesRequest) (resp GetWarehousesResponse, err error)
 	Get(ctx context.Context, req GetWarehouseRequest) (resp GetWarehouseResponse, err error)
 	CreateWarehouseProduct(ctx context.Context, req CreateWarehouseProductRequest) (resp CreateWarehouseProductResponse, err error)
-	GetWarehouseProduct(ctx context.Context, req GetWarehouseProductRequest) (resp GetWarehouseProductResponse, err error)
+	GetMaxQuantityByProductUUIDs(ctx context.Context, req GetWarehouseProductRequest) (resp map[uuid.UUID]GetWarehouseProductResponse, err error)
 }
 
 type usecase struct {

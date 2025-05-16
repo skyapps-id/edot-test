@@ -7,7 +7,7 @@ import (
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/usecase/warehouse"
 )
 
-func (h *handler) GetWarehouseProduct(c echo.Context) (err error) {
+func (h *handler) GetMaxQuantityByProductUUIDs(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req warehouse.GetWarehouseProductRequest
 
@@ -16,7 +16,7 @@ func (h *handler) GetWarehouseProduct(c echo.Context) (err error) {
 		return echo.NewHTTPError(400, err.Error())
 	}
 
-	resp, err := h.warehouseUsecase.GetWarehouseProduct(ctx, req)
+	resp, err := h.warehouseUsecase.GetMaxQuantityByProductUUIDs(ctx, req)
 	if err != nil {
 		return
 	}
