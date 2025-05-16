@@ -47,8 +47,32 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 	totalPrice := float64(0)
 	totaItem := 0
 	for _, row := range req.Orderitems {
-		product := products[row.ProductUUID]
-		shopWarehouse := productStock[row.ProductUUID]
+		product, ok := products[row.ProductUUID]
+		if !ok {
+			err = apperror.New(
+				http.StatusUnprocessableEntity,
+				fmt.Errorf("product not found uuid: %s", row.ProductUUID),
+			)
+			return
+		}
+
+		shopWarehouse, ok := productStock[row.ProductUUID]
+		if !ok {
+			err = apperror.New(
+				http.StatusUnprocessableEntity,
+				fmt.Errorf("product stock not found: [%s,%s,%s]", row.ProductUUID, product.SKU, product.Name),
+			)
+			return
+		}
+
+		if shopWarehouse.Quantity < row.Quantity {
+			err = apperror.New(
+				http.StatusUnprocessableEntity,
+				fmt.Errorf("insufficient stock for product: [%s,%s,%s]", row.ProductUUID, product.SKU, product.Name),
+			)
+			return
+		}
+
 		totalPriceItem := product.Price * float64(row.Quantity)
 		orderItems = append(orderItems, entity.OrderItem{
 			OrderUUID:     order.UUID,
