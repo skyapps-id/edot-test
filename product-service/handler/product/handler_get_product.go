@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/skyapps-id/edot-test/product-service/pkg/response"
+	"github.com/skyapps-id/edot-test/product-service/pkg/validator"
 	"github.com/skyapps-id/edot-test/product-service/usecase/product"
 	"gopkg.in/guregu/null.v4"
 )
@@ -49,6 +50,23 @@ func (h *handler) Get(c echo.Context) (err error) {
 	}
 
 	resp, err := h.productUsecase.Get(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.ResponseSuccess(c, resp)
+}
+
+func (h *handler) GetByUUIDs(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req product.GetProductByUUIDsRequest
+
+	err = validator.Validate(c, &req)
+	if err != nil {
+		return echo.NewHTTPError(400, err.Error())
+	}
+
+	resp, err := h.productUsecase.GetByUUIDs(ctx, req)
 	if err != nil {
 		return
 	}

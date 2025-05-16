@@ -16,4 +16,5 @@ func Router(server *echo.Echo, container *container.Container) {
 	server.POST("/products", product.Create)
 	server.GET("/products", product.Gets)
 	server.GET("/products/:uuid", product.Get)
+	server.POST("/internal/products/uuids", product.GetByUUIDs)
 }

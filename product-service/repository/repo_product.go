@@ -20,6 +20,7 @@ type Product interface {
 	FindByUUID(ctx context.Context, uuid uuid.UUID) (product entity.Product, err error)
 	FindBySKU(ctx context.Context, sku string) (product entity.Product, err error)
 	FindByName(ctx context.Context, name string) (product entity.Product, err error)
+	GetByUUIDs(ctx context.Context, UUIDs []uuid.UUID) (products []entity.Product, err error)
 }
 
 type product struct {
@@ -111,6 +112,19 @@ func (r *product) FindByName(ctx context.Context, name string) (product entity.P
 			zap.Error(err),
 			zap.String("module", "ProductRepository"),
 			zap.String("method", "FindByName"),
+		)
+	}
+
+	return
+}
+
+func (r *product) GetByUUIDs(ctx context.Context, UUIDs []uuid.UUID) (products []entity.Product, err error) {
+	err = r.database.WithContext(ctx).Where("uuid IN ?", UUIDs).Find(&products).Error
+	if err != nil {
+		logger.Log.Error("Error in ProductRepository.GetByUUIDs",
+			zap.Error(err),
+			zap.String("module", "ProductRepository"),
+			zap.String("method", "GetByUUIDs"),
 		)
 	}
 

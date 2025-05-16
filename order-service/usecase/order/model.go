@@ -18,6 +18,14 @@ type CreateOrderRequest struct {
 	Orderitems []OrderItemsRequest `json:"order_items" validate:"required"`
 }
 
+func (t CreateOrderRequest) GetProductUUIDs() (uuids []uuid.UUID) {
+	for _, row := range t.Orderitems {
+		uuids = append(uuids, row.ProductUUID)
+	}
+
+	return
+}
+
 type CreateOrderResponse struct {
 	OrderID string `json:"order_id"`
 }

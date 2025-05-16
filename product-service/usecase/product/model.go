@@ -56,3 +56,7 @@ type GetProductResponse struct {
 	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at"`
 }
+
+type GetProductByUUIDsRequest struct {
+	UUIDs []uuid.UUID `json:"uuids" validate:"required"`
+}

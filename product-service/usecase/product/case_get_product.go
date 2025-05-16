@@ -43,3 +43,18 @@ func (uc *usecase) Get(ctx context.Context, req GetProductRequest) (resp GetProd
 
 	return
 }
+
+func (uc *usecase) GetByUUIDs(ctx context.Context, req GetProductByUUIDsRequest) (resp []GetProductResponse, err error) {
+	ctx, span := tracer.Define().Start(ctx, "ProductUsecase.GetByUUIDs")
+	defer span.End()
+
+	products, err := uc.productRepository.GetByUUIDs(ctx, req.UUIDs)
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get product"))
+		return
+	}
+
+	resp = uc.productByUUidsMapper(products)
+
+	return
+}

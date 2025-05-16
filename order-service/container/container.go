@@ -5,6 +5,7 @@ import (
 	"github.com/skyapps-id/edot-test/order-service/driver"
 	"github.com/skyapps-id/edot-test/order-service/repository"
 	"github.com/skyapps-id/edot-test/order-service/usecase/order"
+	"github.com/skyapps-id/edot-test/order-service/wrapper/product_service"
 )
 
 type Container struct {
@@ -22,8 +23,11 @@ func Setup() *Container {
 	// Repository
 	repo_order := repository.NewOrderRepository(database)
 
+	// Wraper
+	product_wrapper := product_service.NewWrapper(config).Setup()
+
 	// Usecase
-	orderUsecase := order.NewUsecase(config, repo_order)
+	orderUsecase := order.NewUsecase(config, repo_order, product_wrapper)
 
 	return &Container{
 		Config:       config,
