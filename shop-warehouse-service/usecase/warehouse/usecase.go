@@ -12,6 +12,7 @@ type WarehouseUsecase interface {
 	Gets(ctx context.Context, req GetWarehousesRequest) (resp GetWarehousesResponse, err error)
 	Get(ctx context.Context, req GetWarehouseRequest) (resp GetWarehouseResponse, err error)
 	CreateWarehouseProduct(ctx context.Context, req CreateWarehouseProductRequest) (resp CreateWarehouseProductResponse, err error)
+	GetWarehouseProduct(ctx context.Context, req GetWarehouseProductRequest) (resp GetWarehouseProductResponse, err error)
 }
 
 type usecase struct {

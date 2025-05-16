@@ -26,3 +26,13 @@ func (uc *usecase) warehouseMapper(result entity.Warehouse) (data GetWarehouseRe
 		UpdatedAt: result.UpdatedAt,
 	}
 }
+
+func (uc *usecase) warehouseProductMapper(result entity.WarehouseProduct) (data GetWarehouseProductResponse) {
+	return GetWarehouseProductResponse{
+		UUID:          result.UUID,
+		WarehouseUUID: result.WarehouseUUID,
+		ProductUUID:   result.ProductUUID,
+		Quantity:      result.Quantity,
+		UpdatedAt:     result.UpdatedAt,
+	}
+}

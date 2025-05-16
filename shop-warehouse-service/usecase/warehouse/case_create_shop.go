@@ -18,6 +18,7 @@ func (uc *usecase) Craete(ctx context.Context, req CreateWarehouseRequest) (resp
 		Name:     req.Name,
 		Address:  req.Address,
 		ShopUUID: req.ShopUUID,
+		Active:   true,
 	})
 	if err != nil {
 		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to save warehouse"))

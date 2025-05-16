@@ -22,4 +22,5 @@ func Router(server *echo.Echo, container *container.Container) {
 	server.GET("/warehouses", warehouse.Gets)
 	server.GET("/warehouses/:uuid", warehouse.Get)
 	server.POST("/warehouses/products", warehouse.CreateWarehouseProduct)
+	server.GET("/warehouses/products/:uuid", warehouse.GetWarehouseProduct)
 }

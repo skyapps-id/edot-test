@@ -60,3 +60,15 @@ type CreateWarehouseProductResponse struct {
 	ProductUUID   uuid.UUID `json:"product_uuid"`
 	Quantity      int       `json:"quantity"`
 }
+
+type GetWarehouseProductRequest struct {
+	UUID uuid.UUID `param:"uuid"`
+}
+
+type GetWarehouseProductResponse struct {
+	UUID          uuid.UUID `json:"uuid"`
+	WarehouseUUID uuid.UUID `json:"warehouse_uuid"`
+	ProductUUID   uuid.UUID `json:"product_uuid"`
+	Quantity      int       `json:"quantity"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
