@@ -67,6 +67,7 @@ type GetWarehouseProductRequest struct {
 
 type GetWarehouseProductResponse struct {
 	UUID          uuid.UUID `json:"uuid"`
+	ShopUUID      uuid.UUID `json:"shop_uuid"`
 	WarehouseUUID uuid.UUID `json:"warehouse_uuid"`
 	ProductUUID   uuid.UUID `json:"product_uuid"`
 	Quantity      int       `json:"quantity"`

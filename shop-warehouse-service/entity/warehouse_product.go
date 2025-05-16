@@ -12,6 +12,7 @@ type WarehouseProduct struct {
 	ProductUUID   uuid.UUID `gorm:"column:product_uuid" json:"product_uuid"`
 	Quantity      int       `gorm:"column:quantity" json:"quantity"`
 	UpdatedAt     time.Time `gorm:"column:updated_at" json:"updated_at"`
+	ShopUUID      uuid.UUID `gorm:"column:shop_uuid;->" json:"shop_uuid"`
 }
 
 func (WarehouseProduct) TableName() string {

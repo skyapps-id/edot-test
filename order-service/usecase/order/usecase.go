@@ -6,6 +6,7 @@ import (
 	"github.com/skyapps-id/edot-test/order-service/config"
 	"github.com/skyapps-id/edot-test/order-service/repository"
 	"github.com/skyapps-id/edot-test/order-service/wrapper/product_service"
+	"github.com/skyapps-id/edot-test/order-service/wrapper/shop_warehouse_service"
 )
 
 type OrderUsecase interface {
@@ -15,15 +16,22 @@ type OrderUsecase interface {
 }
 
 type usecase struct {
-	cfg             config.Config
-	orderRepository repository.Order
-	productWrapper  product_service.ProductServiceWrapper
+	cfg                  config.Config
+	orderRepository      repository.Order
+	productWrapper       product_service.ProductServiceWrapper
+	shopWarehouseWrapper shop_warehouse_service.ShopWarehousetServiceWrapper
 }
 
-func NewUsecase(cfg config.Config, orderRepository repository.Order, productWrapper product_service.ProductServiceWrapper) OrderUsecase {
+func NewUsecase(
+	cfg config.Config,
+	orderRepository repository.Order,
+	productWrapper product_service.ProductServiceWrapper,
+	shopWarehouseWrapper shop_warehouse_service.ShopWarehousetServiceWrapper,
+) OrderUsecase {
 	return &usecase{
-		cfg:             cfg,
-		orderRepository: orderRepository,
-		productWrapper:  productWrapper,
+		cfg:                  cfg,
+		orderRepository:      orderRepository,
+		productWrapper:       productWrapper,
+		shopWarehouseWrapper: shopWarehouseWrapper,
 	}
 }

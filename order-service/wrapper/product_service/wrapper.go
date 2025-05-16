@@ -3,11 +3,11 @@ package product_service
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/order-service/config"
-	"github.com/skyapps-id/edot-test/order-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/order-service/pkg/http_client"
 	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
 )
@@ -38,18 +38,18 @@ func (w *wrapper) GetProducts(ctx context.Context, req ProductRequest) (resp map
 
 	body, status, err := w.httpClient.Post(ctx, "/internal/products/uuids", http.Header{}, req.Json())
 	if err != nil {
-		err = apperror.New(status, err)
+		err = fmt.Errorf("request api status %d error %w", status, err)
 		return
 	}
 
 	var raw map[string]json.RawMessage
 	if err = json.Unmarshal(body, &raw); err != nil {
-		err = apperror.New(status, err)
+		err = fmt.Errorf("resp body unmarshal raw error: %w", err)
 		return
 	}
 
 	if err = json.Unmarshal(raw["data"], &resp); err != nil {
-		err = apperror.New(status, err)
+		err = fmt.Errorf("resp body unmarshal data error: %w", err)
 		return
 	}
 

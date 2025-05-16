@@ -40,6 +40,7 @@ func (uc *usecase) warehouseProductMapper(req GetWarehouseProductRequest, result
 		if record, ok := mapData[productUUID]; ok {
 			resp[productUUID] = GetWarehouseProductResponse{
 				UUID:          record.UUID,
+				ShopUUID:      record.ShopUUID,
 				WarehouseUUID: record.WarehouseUUID,
 				ProductUUID:   record.ProductUUID,
 				Quantity:      record.Quantity,

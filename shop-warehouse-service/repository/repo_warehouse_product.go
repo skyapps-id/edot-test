@@ -47,7 +47,8 @@ func (r *warehouseProduct) GetMaxQuantityByProductUUIDs(ctx context.Context, pro
 			warehouse_products.warehouse_uuid,
 			warehouse_products.product_uuid,
 			warehouse_products.quantity,
-			warehouse_products.updated_at
+			warehouse_products.updated_at,
+			warehouses.shop_uuid AS shop_uuid
 		`).
 		Joins("JOIN warehouses ON warehouses.uuid = warehouse_products.warehouse_uuid AND warehouses.active = true").
 		Where("warehouse_products.product_uuid IN ?", productUUIDs).
