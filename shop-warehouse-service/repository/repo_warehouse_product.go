@@ -13,6 +13,7 @@ import (
 type WarehouseProduct interface {
 	Create(ctx context.Context, warehouseProduct entity.WarehouseProduct) (err error)
 	GetMaxQuantityByProductUUIDs(ctx context.Context, productUUIDs []uuid.UUID) (warehouse []entity.WarehouseProduct, err error)
+	GetProductStock(ctx context.Context, productUUID uuid.UUID) (warehouseProduct entity.WarehouseProduct, err error)
 }
 
 type warehouseProduct struct {
@@ -39,7 +40,7 @@ func (r *warehouseProduct) Create(ctx context.Context, warehouseProduct entity.W
 	return
 }
 
-func (r *warehouseProduct) GetMaxQuantityByProductUUIDs(ctx context.Context, productUUIDs []uuid.UUID) (warehouse []entity.WarehouseProduct, err error) {
+func (r *warehouseProduct) GetMaxQuantityByProductUUIDs(ctx context.Context, productUUIDs []uuid.UUID) (warehouseProducts []entity.WarehouseProduct, err error) {
 	err = r.database.WithContext(ctx).
 		Select(`
 			DISTINCT ON (warehouse_products.product_uuid)
@@ -53,12 +54,35 @@ func (r *warehouseProduct) GetMaxQuantityByProductUUIDs(ctx context.Context, pro
 		Joins("JOIN warehouses ON warehouses.uuid = warehouse_products.warehouse_uuid AND warehouses.active = true").
 		Where("warehouse_products.product_uuid IN ?", productUUIDs).
 		Order("warehouse_products.product_uuid, warehouse_products.quantity DESC").
-		Find(&warehouse).Error
+		Find(&warehouseProducts).Error
 	if err != nil {
 		logger.Log.Error("Error in WarehouseProductRepository.GetMaxStockByProductUUID",
 			zap.Error(err),
 			zap.String("module", "WarehouseProductRepository"),
 			zap.String("method", "GetMaxStockByProductUUID"),
+		)
+	}
+
+	return
+}
+
+func (r *warehouseProduct) GetProductStock(ctx context.Context, productUUID uuid.UUID) (warehouseProduct entity.WarehouseProduct, err error) {
+	err = r.database.WithContext(ctx).
+		Select(`
+			warehouse_products.uuid,
+			warehouse_products.warehouse_uuid,
+			warehouse_products.product_uuid,
+			SUM(warehouse_products.quantity) AS quantity,
+			warehouse_products.updated_at,
+		`).
+		Joins("JOIN warehouses ON warehouses.uuid = warehouse_products.warehouse_uuid AND warehouses.active = true").
+		Where("warehouse_products.product_uuid = ?", productUUID).
+		First(&warehouseProduct).Error
+	if err != nil {
+		logger.Log.Error("Error in WarehouseProductRepository.GetAllStock",
+			zap.Error(err),
+			zap.String("module", "WarehouseProductRepository"),
+			zap.String("method", "GetAllStock"),
 		)
 	}
 
