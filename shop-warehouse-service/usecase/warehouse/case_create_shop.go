@@ -15,8 +15,9 @@ func (uc *usecase) Craete(ctx context.Context, req CreateWarehouseRequest) (resp
 	defer span.End()
 
 	err = uc.warehouseRepository.Create(ctx, entity.Warehouse{
-		Name:    req.Name,
-		Address: req.Address,
+		Name:     req.Name,
+		Address:  req.Address,
+		ShopUUID: req.ShopUUID,
 	})
 	if err != nil {
 		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to save warehouse"))

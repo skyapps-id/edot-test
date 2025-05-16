@@ -24,10 +24,11 @@ func Setup() *Container {
 	// Repository
 	repo_shop := repository.NewShopRepository(database)
 	repo_warehouse := repository.NewWarehouseRepository(database)
+	repo_warehouse_product := repository.NewWarehouseProductRepository(database)
 
 	// Usecase
 	shopUsecase := shop.NewUsecase(config, repo_shop)
-	warehouseUsecase := warehouse.NewUsecase(config, repo_warehouse)
+	warehouseUsecase := warehouse.NewUsecase(config, repo_warehouse, repo_warehouse_product)
 
 	return &Container{
 		Config:           config,

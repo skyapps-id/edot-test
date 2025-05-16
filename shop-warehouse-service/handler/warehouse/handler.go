@@ -9,6 +9,7 @@ type WarehouseHandler interface {
 	Create(c echo.Context) (err error)
 	Gets(c echo.Context) (err error)
 	Get(c echo.Context) (err error)
+	CreateWarehouseProduct(c echo.Context) (err error)
 }
 
 type handler struct {

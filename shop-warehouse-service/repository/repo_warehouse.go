@@ -34,7 +34,7 @@ func NewWarehouseRepository(database *gorm.DB) Warehouse {
 func (r *warehouse) Create(ctx context.Context, warehouse entity.Warehouse) (err error) {
 	err = r.database.WithContext(ctx).Create(&warehouse).Error
 	if err != nil {
-		logger.Log.Error("Error in WarehouseRepository.FindByUUID",
+		logger.Log.Error("Error in WarehouseRepository.Create",
 			zap.Error(err),
 			zap.String("module", "WarehouseRepository"),
 			zap.String("method", "Create"),

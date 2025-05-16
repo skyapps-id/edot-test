@@ -9,8 +9,9 @@ import (
 )
 
 type CreateWarehouseRequest struct {
-	Name    string `json:"name" validate:"required"`
-	Address string `json:"address" validate:"required"`
+	Name     string    `json:"name" validate:"required"`
+	Address  string    `json:"address" validate:"required"`
+	ShopUUID uuid.UUID `json:"shop_uuid" validate:"required"`
 }
 
 type CreateWarehouseResponse struct {
@@ -46,4 +47,16 @@ type GetWarehouseResponse struct {
 	Address   string    `json:"address"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type CreateWarehouseProductRequest struct {
+	WarehouseUUID uuid.UUID `json:"warehouse_uuid" validate:"required"`
+	ProductUUID   uuid.UUID `json:"product_uuid" validate:"required"`
+	Quantity      int       `json:"quantity" validate:"required"`
+}
+
+type CreateWarehouseProductResponse struct {
+	WarehouseUUID uuid.UUID `json:"warehouse_uuid"`
+	ProductUUID   uuid.UUID `json:"product_uuid"`
+	Quantity      int       `json:"quantity"`
 }
