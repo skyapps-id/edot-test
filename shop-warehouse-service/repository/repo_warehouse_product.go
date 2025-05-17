@@ -2,18 +2,24 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/entity"
+	"github.com/skyapps-id/edot-test/shop-warehouse-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/pkg/logger"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type WarehouseProduct interface {
 	Create(ctx context.Context, warehouseProduct entity.WarehouseProduct) (err error)
 	GetMaxQuantityByProductUUIDs(ctx context.Context, productUUIDs []uuid.UUID) (warehouse []entity.WarehouseProduct, err error)
 	GetProductStock(ctx context.Context, productUUID uuid.UUID) (warehouseProduct entity.WarehouseProduct, err error)
+	ProductStockAddition(ctx context.Context, products []entity.ProductStock) (err error)
+	ProductStockReduction(ctx context.Context, products []entity.ProductStock) (err error)
 }
 
 type warehouseProduct struct {
@@ -87,4 +93,65 @@ func (r *warehouseProduct) GetProductStock(ctx context.Context, productUUID uuid
 	}
 
 	return
+}
+
+func (r *warehouseProduct) ProductStockAddition(ctx context.Context, products []entity.ProductStock) (err error) {
+	tx := r.database.WithContext(ctx).Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	for _, row := range products {
+		var warehouseProduct entity.WarehouseProduct
+		err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
+			First(&warehouseProduct).Error
+		if err != nil {
+			tx.Rollback()
+			return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("product stock not found: %w", err))
+		}
+
+		err = tx.Model(&warehouseProduct).
+			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
+			Update("quantity", warehouseProduct.Quantity+row.Quantity).Error
+		if err != nil {
+			tx.Rollback()
+			return apperror.New(http.StatusInternalServerError, fmt.Errorf("failed to update stock: %w", err))
+		}
+	}
+
+	return tx.Commit().Error
+}
+
+func (r *warehouseProduct) ProductStockReduction(ctx context.Context, products []entity.ProductStock) (err error) {
+	tx := r.database.WithContext(ctx).Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	for _, row := range products {
+		var warehouseProduct entity.WarehouseProduct
+		err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
+			First(&warehouseProduct).Error
+		if err != nil {
+			tx.Rollback()
+			return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("product stock not found: %w", err))
+		}
+
+		if warehouseProduct.Quantity < row.Quantity {
+			tx.Rollback()
+			return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("insufficient stock for product: %s", row.ProductUUID))
+		}
+
+		err = tx.Model(&warehouseProduct).
+			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
+			Update("quantity", warehouseProduct.Quantity-row.Quantity).Error
+		if err != nil {
+			tx.Rollback()
+			return apperror.New(http.StatusInternalServerError, fmt.Errorf("failed to update stock: %w", err))
+		}
+	}
+
+	return tx.Commit().Error
 }

@@ -18,3 +18,9 @@ type WarehouseProduct struct {
 func (WarehouseProduct) TableName() string {
 	return "warehouse_products"
 }
+
+type ProductStock struct {
+	ProductUUID   uuid.UUID
+	WarehouseUUID uuid.UUID
+	Quantity      int
+}

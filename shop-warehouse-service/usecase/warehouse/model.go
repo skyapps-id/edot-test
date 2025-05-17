@@ -72,3 +72,24 @@ type GetWarehouseProductResponse struct {
 	ProductUUID   uuid.UUID `json:"product_uuid"`
 	Quantity      int       `json:"quantity"`
 }
+
+type DataProductStock struct {
+	ProductUUID   uuid.UUID `json:"product_uuid" validate:"required"`
+	WarehouseUUID uuid.UUID `json:"warehouse_uuid" validate:"required"`
+	Quantity      int       `json:"quantity" validate:"required,gt=0"`
+}
+type ProductStockAdditionRequest struct {
+	Products []DataProductStock `json:"products" validate:"required,dive"`
+}
+
+type ProductStockAdditionResponse struct {
+	ProductUUIDs []uuid.UUID `json:"product_uuids"`
+}
+
+type ProductStockReductionRequest struct {
+	Products []DataProductStock `json:"products" validate:"required,dive"`
+}
+
+type ProductStockReductionResponse struct {
+	ProductUUIDs []uuid.UUID `json:"product_uuids"`
+}

@@ -14,6 +14,8 @@ type WarehouseUsecase interface {
 	Get(ctx context.Context, req GetWarehouseRequest) (resp GetWarehouseResponse, err error)
 	CreateWarehouseProduct(ctx context.Context, req CreateWarehouseProductRequest) (resp CreateWarehouseProductResponse, err error)
 	GetMaxQuantityByProductUUIDs(ctx context.Context, req GetWarehouseProductRequest) (resp map[uuid.UUID]GetWarehouseProductResponse, err error)
+	ProductStockAddition(ctx context.Context, req ProductStockAdditionRequest) (resp ProductStockAdditionResponse, err error)
+	ProductStockReduction(ctx context.Context, req ProductStockReductionRequest) (resp ProductStockReductionResponse, err error)
 }
 
 type usecase struct {
