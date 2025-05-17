@@ -57,8 +57,6 @@ func (r *order) Create(ctx context.Context, order entity.Order, orderItems []ent
 		tx.Rollback()
 	}
 
-	// tx.Commit()
-
 	return
 }
 
