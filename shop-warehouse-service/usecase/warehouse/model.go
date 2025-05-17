@@ -122,3 +122,14 @@ type ProductRestockReqeust struct {
 type ProductRestockResponse struct {
 	UUID uuid.UUID `json:"uuid"`
 }
+
+type TransferStockReqeust struct {
+	ProductUUID      uuid.UUID `json:"product_uuid" validate:"required"`
+	WarehouseUUIDSrc uuid.UUID `json:"warehouse_uuid_src" validate:"required"`
+	WarehouseUUIDDst uuid.UUID `json:"warehouse_uuid_dst" validate:"required"`
+	Quantity         int       `json:"quantity" validate:"required,gt=0"`
+}
+
+type TransferStockResponse struct {
+	UUID uuid.UUID `json:"uuid"`
+}

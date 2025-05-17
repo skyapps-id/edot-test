@@ -23,7 +23,7 @@ func (uc *usecase) ProductRestock(ctx context.Context, req ProductRestockReqeust
 		return
 	}
 	if err != nil {
-		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to warehouse product err %w", err))
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get warehouse err %w", err))
 		return
 	}
 
@@ -38,7 +38,7 @@ func (uc *usecase) ProductRestock(ctx context.Context, req ProductRestockReqeust
 		return
 	}
 	if err != nil {
-		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to warehouse product err %w", err))
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get warehouse product err %w", err))
 		return
 	}
 
@@ -105,6 +105,66 @@ func (uc *usecase) ProductStockReduction(ctx context.Context, req ProductStockRe
 	}
 
 	resp.ProductUUIDs = productUUIDs
+
+	return
+}
+
+func (uc *usecase) TransferStock(ctx context.Context, req TransferStockReqeust) (resp TransferStockResponse, err error) {
+	ctx, span := tracer.Define().Start(ctx, "WarehouseUsecase.TransferStock")
+	defer span.End()
+
+	warehouseSrc, err := uc.warehouseRepository.FindByUUID(ctx, req.WarehouseUUIDSrc)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = apperror.New(http.StatusNotFound, fmt.Errorf("warehouse source not found"))
+		return
+	}
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get warehouse source err %w", err))
+		return
+	}
+
+	if !warehouseSrc.Active {
+		err = apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("warehouse source inactive"))
+		return
+	}
+
+	warehouseDst, err := uc.warehouseRepository.FindByUUID(ctx, req.WarehouseUUIDDst)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = apperror.New(http.StatusNotFound, fmt.Errorf("warehouse destination not found"))
+		return
+	}
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get warehouse destination err %w", err))
+		return
+	}
+
+	if !warehouseDst.Active {
+		err = apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("warehouse destination inactive"))
+		return
+	}
+
+	warehouseProduct, err := uc.warehouseProductRepository.GetByWarehouseUUIDAndProductUUID(ctx, req.WarehouseUUIDSrc, req.ProductUUID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = apperror.New(http.StatusNotFound, fmt.Errorf("warehouse product not found"))
+		return
+	}
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get warehouse product err %w", err))
+		return
+	}
+
+	if req.Quantity > warehouseProduct.Quantity {
+		err = apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("warehouse source quantity stock limited"))
+		return
+	}
+
+	err = uc.warehouseProductRepository.TransferStock(ctx, req.ProductUUID, req.WarehouseUUIDSrc, req.WarehouseUUIDDst, req.Quantity)
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to product transfer stock err %w", err))
+		return
+	}
+
+	resp.UUID = req.ProductUUID
 
 	return
 }

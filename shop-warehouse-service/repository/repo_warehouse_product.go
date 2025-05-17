@@ -21,6 +21,7 @@ type WarehouseProduct interface {
 	GetProductStock(ctx context.Context, productUUID uuid.UUID) (warehouseProduct entity.WarehouseProduct, err error)
 	ProductStockAddition(ctx context.Context, products []entity.ProductStock) (err error)
 	ProductStockReduction(ctx context.Context, products []entity.ProductStock) (err error)
+	TransferStock(ctx context.Context, productUUID, warehouseUUIDSrc, warehouseUUIDDst uuid.UUID, quantity int) (err error)
 }
 
 type warehouseProduct struct {
@@ -166,6 +167,56 @@ func (r *warehouseProduct) ProductStockReduction(ctx context.Context, products [
 			tx.Rollback()
 			return apperror.New(http.StatusInternalServerError, fmt.Errorf("failed to update stock: %w", err))
 		}
+	}
+
+	return tx.Commit().Error
+}
+
+func (r *warehouseProduct) TransferStock(ctx context.Context, productUUID uuid.UUID, warehouseUUIDSrc uuid.UUID, warehouseUUIDDst uuid.UUID, quantity int) (err error) {
+	tx := r.database.WithContext(ctx).Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	// Source
+	var warehouseProductSrc entity.WarehouseProduct
+	err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDSrc).
+		First(&warehouseProductSrc).Error
+	if err != nil {
+		tx.Rollback()
+		return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("product stock source not found: %w", err))
+	}
+
+	if warehouseProductSrc.Quantity == 0 {
+		tx.Rollback()
+		return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("insufficient stock for product source: %s", productUUID))
+	}
+
+	err = tx.Model(&warehouseProductSrc).
+		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDSrc).
+		Update("quantity", warehouseProductSrc.Quantity-quantity).Error
+	if err != nil {
+		tx.Rollback()
+		return apperror.New(http.StatusInternalServerError, fmt.Errorf("failed to update stock source: %w", err))
+	}
+
+	// Destination
+	var warehouseProductDst entity.WarehouseProduct
+	err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDDst).
+		First(&warehouseProductDst).Error
+	if err != nil {
+		tx.Rollback()
+		return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("product stock destination not found: %w", err))
+	}
+
+	err = tx.Model(&warehouseProductDst).
+		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDDst).
+		Update("quantity", warehouseProductDst.Quantity+quantity).Error
+	if err != nil {
+		tx.Rollback()
+		return apperror.New(http.StatusInternalServerError, fmt.Errorf("failed to update stock destination: %w", err))
 	}
 
 	return tx.Commit().Error

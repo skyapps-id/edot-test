@@ -57,3 +57,20 @@ func (h *handler) ProductStockReduction(c echo.Context) (err error) {
 
 	return response.ResponseSuccess(c, resp)
 }
+
+func (h *handler) TransferStock(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req warehouse.TransferStockReqeust
+
+	err = validator.Validate(c, &req)
+	if err != nil {
+		return echo.NewHTTPError(400, err.Error())
+	}
+
+	resp, err := h.warehouseUsecase.TransferStock(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.ResponseSuccess(c, resp)
+}

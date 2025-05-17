@@ -19,6 +19,7 @@ type WarehouseUsecase interface {
 	GetProductStock(ctx context.Context, req GetProductStockRequest) (resp GetProductStockResponse, err error)
 	WarehouseUpdateActive(ctx context.Context, req WarehouseUpdateActiveRequest) (resp WarehouseUpdateActiveResponse, err error)
 	ProductRestock(ctx context.Context, req ProductRestockReqeust) (resp ProductRestockResponse, err error)
+	TransferStock(ctx context.Context, req TransferStockReqeust) (resp TransferStockResponse, err error)
 }
 
 type usecase struct {
