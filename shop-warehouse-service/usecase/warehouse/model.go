@@ -112,3 +112,13 @@ type WarehouseUpdateActiveRequest struct {
 type WarehouseUpdateActiveResponse struct {
 	UUID uuid.UUID `json:"uuid"`
 }
+
+type ProductRestockReqeust struct {
+	ProductUUID   uuid.UUID `json:"product_uuid" validate:"required"`
+	WarehouseUUID uuid.UUID `json:"warehouse_uuid" validate:"required"`
+	Quantity      int       `json:"quantity" validate:"required,gt=0"`
+}
+
+type ProductRestockResponse struct {
+	UUID uuid.UUID `json:"uuid"`
+}

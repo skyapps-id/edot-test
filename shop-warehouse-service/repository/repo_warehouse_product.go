@@ -16,6 +16,7 @@ import (
 
 type WarehouseProduct interface {
 	Create(ctx context.Context, warehouseProduct entity.WarehouseProduct) (err error)
+	GetByWarehouseUUIDAndProductUUID(ctx context.Context, warehouseUUID, productUUID uuid.UUID) (warehouse entity.WarehouseProduct, err error)
 	GetMaxQuantityByProductUUIDs(ctx context.Context, productUUIDs []uuid.UUID) (warehouse []entity.WarehouseProduct, err error)
 	GetProductStock(ctx context.Context, productUUID uuid.UUID) (warehouseProduct entity.WarehouseProduct, err error)
 	ProductStockAddition(ctx context.Context, products []entity.ProductStock) (err error)
@@ -43,6 +44,22 @@ func (r *warehouseProduct) Create(ctx context.Context, warehouseProduct entity.W
 			zap.String("method", "Create"),
 		)
 	}
+	return
+
+}
+
+func (r *warehouseProduct) GetByWarehouseUUIDAndProductUUID(ctx context.Context, warehouseUUID, productUUID uuid.UUID) (warehouse entity.WarehouseProduct, err error) {
+	err = r.database.WithContext(ctx).
+		Where("warehouse_uuid = ? AND product_uuid = ?", warehouseUUID, productUUID).
+		Take(&warehouse).Error
+	if err != nil {
+		logger.Log.Error("Error in WarehouseProductRepository.GetByWarehouseUUIDAndProductUUID",
+			zap.Error(err),
+			zap.String("module", "WarehouseProductRepository"),
+			zap.String("method", "GetByWarehouseUUIDAndProductUUID"),
+		)
+	}
+
 	return
 }
 

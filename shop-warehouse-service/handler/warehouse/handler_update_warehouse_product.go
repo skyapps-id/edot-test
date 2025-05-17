@@ -7,6 +7,23 @@ import (
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/usecase/warehouse"
 )
 
+func (h *handler) ProductRestock(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req warehouse.ProductRestockReqeust
+
+	err = validator.Validate(c, &req)
+	if err != nil {
+		return echo.NewHTTPError(400, err.Error())
+	}
+
+	resp, err := h.warehouseUsecase.ProductRestock(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.ResponseSuccess(c, resp)
+}
+
 func (h *handler) ProductStockAddition(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	var req warehouse.ProductStockAdditionRequest
