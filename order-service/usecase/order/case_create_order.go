@@ -45,6 +45,7 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 
 	orderItems := []entity.OrderItem{}
 	totalPrice := float64(0)
+	productReduction := shop_warehouse_service.ProductStockReductionRequest{}
 	totaItem := 0
 	for _, row := range req.Orderitems {
 		product, ok := products[row.ProductUUID]
@@ -87,15 +88,29 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 		})
 		totalPrice += totalPriceItem
 		totaItem += row.Quantity
+
+		productReduction.Products = append(productReduction.Products, shop_warehouse_service.DataProductStock{
+			ProductUUID:   product.UUID,
+			WarehouseUUID: shopWarehouse.WarehouseUUID,
+			Quantity:      row.Quantity,
+		})
 	}
 	order.TotalItems = totaItem
 
-	err = uc.orderRepository.Create(ctx, order, orderItems)
+	tx, err := uc.orderRepository.Create(ctx, order, orderItems)
 	if err != nil {
 		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to save order"))
 		return
 	}
 
+	_, err = uc.shopWarehouseWrapper.ProductStockReduction(ctx, productReduction)
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail product stock reduction: %w", err))
+		tx.Rollback()
+		return
+	}
+
+	tx.Commit()
 	resp.OrderID = order.OrderID
 
 	return

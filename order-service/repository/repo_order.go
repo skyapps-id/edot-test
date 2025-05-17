@@ -14,7 +14,7 @@ import (
 )
 
 type Order interface {
-	Create(ctx context.Context, order entity.Order, orderItems []entity.OrderItem) (err error)
+	Create(ctx context.Context, order entity.Order, orderItems []entity.OrderItem) (tx *gorm.DB, err error)
 	GetAll(ctx context.Context, name null.String, limit, offset int, sort string) (order []entity.Order, count int64, err error)
 	FindByUUID(ctx context.Context, uuid uuid.UUID) (order entity.Order, err error)
 	FindBySKU(ctx context.Context, sku string) (order entity.Order, err error)
@@ -35,8 +35,8 @@ func NewOrderRepository(database *gorm.DB) Order {
 	}
 }
 
-func (r *order) Create(ctx context.Context, order entity.Order, orderItems []entity.OrderItem) (err error) {
-	tx := r.database.WithContext(ctx).Begin()
+func (r *order) Create(ctx context.Context, order entity.Order, orderItems []entity.OrderItem) (tx *gorm.DB, err error) {
+	tx = r.database.WithContext(ctx).Begin()
 	err = tx.Table(r.tableName).Create(&order).Error
 	if err != nil {
 		logger.Log.Error("Error in OrderRepository.Create",
@@ -57,7 +57,7 @@ func (r *order) Create(ctx context.Context, order entity.Order, orderItems []ent
 		tx.Rollback()
 	}
 
-	tx.Commit()
+	// tx.Commit()
 
 	return
 }
