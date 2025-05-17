@@ -62,10 +62,10 @@ func (r *warehouseProduct) GetMaxQuantityByProductUUIDs(ctx context.Context, pro
 		Order("warehouse_products.product_uuid, warehouse_products.quantity DESC").
 		Find(&warehouseProducts).Error
 	if err != nil {
-		logger.Log.Error("Error in WarehouseProductRepository.GetMaxStockByProductUUID",
+		logger.Log.Error("Error in WarehouseProductRepository.GetMaxQuantityByProductUUIDs",
 			zap.Error(err),
 			zap.String("module", "WarehouseProductRepository"),
-			zap.String("method", "GetMaxStockByProductUUID"),
+			zap.String("method", "GetMaxQuantityByProductUUIDs"),
 		)
 	}
 
@@ -85,10 +85,10 @@ func (r *warehouseProduct) GetProductStock(ctx context.Context, productUUID uuid
 		Where("warehouse_products.product_uuid = ?", productUUID).
 		First(&warehouseProduct).Error
 	if err != nil {
-		logger.Log.Error("Error in WarehouseProductRepository.GetAllStock",
+		logger.Log.Error("Error in WarehouseProductRepository.GetProductStock",
 			zap.Error(err),
 			zap.String("module", "WarehouseProductRepository"),
-			zap.String("method", "GetAllStock"),
+			zap.String("method", "GetProductStock"),
 		)
 	}
 
