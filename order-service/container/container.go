@@ -22,14 +22,15 @@ func Setup() *Container {
 	database := driver.NewGormDatabase(config)
 
 	// Repository
-	repo_order := repository.NewOrderRepository(database)
+	orderRepository := repository.NewOrderRepository(database)
+	orderItemRepository := repository.NewOrderItemRepository(database)
 
 	// Wraper
-	product_wrapper := product_service.NewWrapper(config).Setup()
-	shop_warehouse_wrapper := shop_warehouse_service.NewWrapper(config).Setup()
+	productWrapper := product_service.NewWrapper(config).Setup()
+	shopWarehouseWrapper := shop_warehouse_service.NewWrapper(config).Setup()
 
 	// Usecase
-	orderUsecase := order.NewUsecase(config, repo_order, product_wrapper, shop_warehouse_wrapper)
+	orderUsecase := order.NewUsecase(config, orderRepository, orderItemRepository, productWrapper, shopWarehouseWrapper)
 
 	return &Container{
 		Config:       config,

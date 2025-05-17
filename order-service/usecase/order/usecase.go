@@ -19,6 +19,7 @@ type OrderUsecase interface {
 type usecase struct {
 	cfg                  config.Config
 	orderRepository      repository.Order
+	orderItemRepository  repository.OrderItem
 	productWrapper       product_service.ProductServiceWrapper
 	shopWarehouseWrapper shop_warehouse_service.ShopWarehousetServiceWrapper
 }
@@ -26,12 +27,14 @@ type usecase struct {
 func NewUsecase(
 	cfg config.Config,
 	orderRepository repository.Order,
+	orderItemRepository repository.OrderItem,
 	productWrapper product_service.ProductServiceWrapper,
 	shopWarehouseWrapper shop_warehouse_service.ShopWarehousetServiceWrapper,
 ) OrderUsecase {
 	return &usecase{
 		cfg:                  cfg,
 		orderRepository:      orderRepository,
+		orderItemRepository:  orderItemRepository,
 		productWrapper:       productWrapper,
 		shopWarehouseWrapper: shopWarehouseWrapper,
 	}
