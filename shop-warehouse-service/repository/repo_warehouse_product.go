@@ -119,7 +119,7 @@ func (r *warehouseProduct) ProductStockAddition(ctx context.Context, products []
 
 	for _, row := range products {
 		var warehouseProduct entity.WarehouseProduct
-		err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+		err = tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).
 			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
 			First(&warehouseProduct).Error
 		if err != nil {
@@ -127,7 +127,7 @@ func (r *warehouseProduct) ProductStockAddition(ctx context.Context, products []
 			return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("product stock not found: %w", err))
 		}
 
-		err = tx.Model(&warehouseProduct).
+		err = tx.WithContext(ctx).Model(&warehouseProduct).
 			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
 			Update("quantity", warehouseProduct.Quantity+row.Quantity).Error
 		if err != nil {
@@ -147,7 +147,7 @@ func (r *warehouseProduct) ProductStockReduction(ctx context.Context, products [
 
 	for _, row := range products {
 		var warehouseProduct entity.WarehouseProduct
-		err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+		err = tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).
 			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
 			First(&warehouseProduct).Error
 		if err != nil {
@@ -160,7 +160,7 @@ func (r *warehouseProduct) ProductStockReduction(ctx context.Context, products [
 			return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("insufficient stock for product: %s", row.ProductUUID))
 		}
 
-		err = tx.Model(&warehouseProduct).
+		err = tx.WithContext(ctx).Model(&warehouseProduct).
 			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
 			Update("quantity", warehouseProduct.Quantity-row.Quantity).Error
 		if err != nil {
@@ -180,9 +180,9 @@ func (r *warehouseProduct) TransferStock(ctx context.Context, productUUID uuid.U
 
 	// Source
 	var warehouseProductSrc entity.WarehouseProduct
-	err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+	err = tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).
 		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDSrc).
-		First(&warehouseProductSrc).Error
+		Take(&warehouseProductSrc).Error
 	if err != nil {
 		tx.Rollback()
 		return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("product stock source not found: %w", err))
@@ -193,7 +193,7 @@ func (r *warehouseProduct) TransferStock(ctx context.Context, productUUID uuid.U
 		return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("insufficient stock for product source: %s", productUUID))
 	}
 
-	err = tx.Model(&warehouseProductSrc).
+	err = tx.WithContext(ctx).Model(&warehouseProductSrc).
 		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDSrc).
 		Update("quantity", warehouseProductSrc.Quantity-quantity).Error
 	if err != nil {
@@ -203,15 +203,15 @@ func (r *warehouseProduct) TransferStock(ctx context.Context, productUUID uuid.U
 
 	// Destination
 	var warehouseProductDst entity.WarehouseProduct
-	err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+	err = tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).
 		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDDst).
-		First(&warehouseProductDst).Error
+		Take(&warehouseProductDst).Error
 	if err != nil {
 		tx.Rollback()
 		return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("product stock destination not found: %w", err))
 	}
 
-	err = tx.Model(&warehouseProductDst).
+	err = tx.WithContext(ctx).Model(&warehouseProductDst).
 		Where("product_uuid = ? AND warehouse_uuid = ?", productUUID, warehouseUUIDDst).
 		Update("quantity", warehouseProductDst.Quantity+quantity).Error
 	if err != nil {
