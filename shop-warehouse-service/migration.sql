@@ -34,3 +34,5 @@ CREATE INDEX idx_shops_name ON shops(name);
 CREATE INDEX idx_warehouses_name ON warehouses(name);
 CREATE INDEX idx_warehouses_shop_uuid ON warehouses(shop_uuid);
 CREATE INDEX idx_warehouse_products_warehouse_uuid ON warehouse_products(warehouse_uuid);
+
+ALTER TABLE public.warehouse_products ADD CONSTRAINT warehouse_products_unique UNIQUE (warehouse_uuid, product_uuid);

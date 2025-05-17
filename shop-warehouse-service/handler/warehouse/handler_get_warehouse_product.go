@@ -23,3 +23,20 @@ func (h *handler) GetMaxQuantityByProductUUIDs(c echo.Context) (err error) {
 
 	return response.ResponseSuccess(c, resp)
 }
+
+func (h *handler) GetProductStock(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	var req warehouse.GetProductStockRequest
+
+	err = c.Bind(&req)
+	if err != nil {
+		return
+	}
+
+	resp, err := h.warehouseUsecase.GetProductStock(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return response.ResponseSuccess(c, resp)
+}

@@ -75,15 +75,13 @@ func (r *warehouseProduct) GetMaxQuantityByProductUUIDs(ctx context.Context, pro
 func (r *warehouseProduct) GetProductStock(ctx context.Context, productUUID uuid.UUID) (warehouseProduct entity.WarehouseProduct, err error) {
 	err = r.database.WithContext(ctx).
 		Select(`
-			warehouse_products.uuid,
-			warehouse_products.warehouse_uuid,
 			warehouse_products.product_uuid,
-			SUM(warehouse_products.quantity) AS quantity,
-			warehouse_products.updated_at,
+			SUM(warehouse_products.quantity) AS quantity
 		`).
 		Joins("JOIN warehouses ON warehouses.uuid = warehouse_products.warehouse_uuid AND warehouses.active = true").
 		Where("warehouse_products.product_uuid = ?", productUUID).
-		First(&warehouseProduct).Error
+		Group("warehouse_products.product_uuid").
+		Take(&warehouseProduct).Error
 	if err != nil {
 		logger.Log.Error("Error in WarehouseProductRepository.GetProductStock",
 			zap.Error(err),

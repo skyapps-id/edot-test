@@ -30,3 +30,23 @@ func (uc *usecase) GetMaxQuantityByProductUUIDs(ctx context.Context, req GetWare
 
 	return
 }
+
+func (uc *usecase) GetProductStock(ctx context.Context, req GetProductStockRequest) (resp GetProductStockResponse, err error) {
+	ctx, span := tracer.Define().Start(ctx, "WarehouseUsecase.GetProductStock")
+	defer span.End()
+
+	productStock, err := uc.warehouseProductRepository.GetProductStock(ctx, req.ProductUUID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = apperror.New(http.StatusNotFound, fmt.Errorf("shop not found"))
+		return
+	}
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get product stock"))
+		return
+	}
+
+	resp.ProductUUID = productStock.ProductUUID
+	resp.Quantity = productStock.Quantity
+
+	return
+}

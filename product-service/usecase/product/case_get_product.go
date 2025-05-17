@@ -9,6 +9,7 @@ import (
 	"github.com/skyapps-id/edot-test/product-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/product-service/pkg/tracer"
 	util "github.com/skyapps-id/edot-test/product-service/pkg/utils"
+	"github.com/skyapps-id/edot-test/product-service/wrapper/shop_warehouse_service"
 )
 
 func (uc *usecase) Gets(ctx context.Context, req GetProductsRequest) (resp GetProductsResponse, err error) {
@@ -40,7 +41,15 @@ func (uc *usecase) Get(ctx context.Context, req GetProductRequest) (resp GetProd
 		return
 	}
 
+	productStock, err := uc.shopWarehouseWrapper.GetProductStock(ctx, shop_warehouse_service.GetProductStockRequest{
+		ProductUUID: req.UUID,
+	})
+	if err != nil {
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to get product stock %w", err))
+		return
+	}
 	resp = uc.productMapper(product)
+	resp.Stock = productStock.Quantity
 
 	return
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/skyapps-id/edot-test/product-service/config"
 	"github.com/skyapps-id/edot-test/product-service/repository"
+	"github.com/skyapps-id/edot-test/product-service/wrapper/shop_warehouse_service"
 )
 
 type ProductUsecase interface {
@@ -16,13 +17,15 @@ type ProductUsecase interface {
 }
 
 type usecase struct {
-	cfg               config.Config
-	productRepository repository.Product
+	cfg                  config.Config
+	productRepository    repository.Product
+	shopWarehouseWrapper shop_warehouse_service.ShopWarehousetServiceWrapper
 }
 
-func NewUsecase(cfg config.Config, productRepository repository.Product) ProductUsecase {
+func NewUsecase(cfg config.Config, productRepository repository.Product, shopWarehouseWrapper shop_warehouse_service.ShopWarehousetServiceWrapper) ProductUsecase {
 	return &usecase{
-		cfg:               cfg,
-		productRepository: productRepository,
+		cfg:                  cfg,
+		productRepository:    productRepository,
+		shopWarehouseWrapper: shopWarehouseWrapper,
 	}
 }

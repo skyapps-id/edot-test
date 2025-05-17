@@ -27,6 +27,9 @@ func (uc *usecase) CreateWarehouseProduct(ctx context.Context, req CreateWarehou
 	}
 
 	// Validation Product UUID
+	/*
+		Code ...
+	*/
 
 	err = uc.warehouseProductRepository.Create(ctx, entity.WarehouseProduct{
 		WarehouseUUID: req.WarehouseUUID,

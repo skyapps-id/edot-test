@@ -93,3 +93,12 @@ type ProductStockReductionRequest struct {
 type ProductStockReductionResponse struct {
 	ProductUUIDs []uuid.UUID `json:"product_uuids"`
 }
+
+type GetProductStockRequest struct {
+	ProductUUID uuid.UUID `param:"uuid"`
+}
+
+type GetProductStockResponse struct {
+	ProductUUID uuid.UUID `json:"product_uuid"`
+	Quantity    int       `json:"quantity"`
+}
