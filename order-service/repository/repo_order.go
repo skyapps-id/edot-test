@@ -19,6 +19,7 @@ type Order interface {
 	FindByUUID(ctx context.Context, uuid uuid.UUID) (order entity.Order, err error)
 	FindBySKU(ctx context.Context, sku string) (order entity.Order, err error)
 	FindByName(ctx context.Context, name string) (order entity.Order, err error)
+	UpdateStatus(ctx context.Context, uuid uuid.UUID, status string) (err error)
 }
 
 type order struct {
@@ -119,6 +120,19 @@ func (r *order) FindByName(ctx context.Context, name string) (order entity.Order
 			zap.Error(err),
 			zap.String("module", "OrderRepository"),
 			zap.String("method", "FindByName"),
+		)
+	}
+
+	return
+}
+
+func (r *order) UpdateStatus(ctx context.Context, uuid uuid.UUID, status string) (err error) {
+	err = r.database.WithContext(ctx).Model(entity.Order{}).Where("uuid = ?", uuid).Update("status", status).Error
+	if err != nil {
+		logger.Log.Error("Error in OrderRepository.UpdateStatus",
+			zap.Error(err),
+			zap.String("module", "OrderRepository"),
+			zap.String("method", "UpdateStatus"),
 		)
 	}
 

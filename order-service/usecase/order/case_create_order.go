@@ -96,6 +96,7 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 		})
 	}
 	order.TotalItems = totaItem
+	order.TotalPrice = totalPrice
 
 	tx, err := uc.orderRepository.Create(ctx, order, orderItems)
 	if err != nil {

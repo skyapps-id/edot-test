@@ -42,7 +42,7 @@ type DataOrders struct {
 	OrderID    string    `json:"order_id"`
 	Status     string    `json:"status"`
 	TotalItems int       `json:"total_items"`
-	TotalPrice float32   `json:"total_price"`
+	TotalPrice float64   `json:"total_price"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
@@ -69,8 +69,16 @@ type GetOrderResponse struct {
 	OrderID    string               `json:"order_id"`
 	Status     string               `json:"status"`
 	TotalItems int                  `json:"total_items"`
-	TotalPrice float32              `json:"total_price"`
+	TotalPrice float64              `json:"total_price"`
 	CreatedAt  time.Time            `json:"created_at"`
 	UpdatedAt  time.Time            `json:"updated_at"`
 	OrderItems []OrderItemsResponse `json:"order_items"`
+}
+
+type OrderStatusToPaymentRequest struct {
+	UUID uuid.UUID `param:"uuid"`
+}
+
+type OrderStatusToPaymentResponse struct {
+	UUID uuid.UUID `json:"uuid"`
 }

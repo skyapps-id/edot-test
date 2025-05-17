@@ -12,7 +12,7 @@ type Order struct {
 	UserUUID   uuid.UUID `gorm:"column:user_uuid" json:"user_uuid"`
 	Status     string    `gorm:"column:status" json:"status"`
 	TotalItems int       `gorm:"column:total_items" json:"total_items"`
-	TotalPrice float32   `gorm:"column:total_price" json:"total_price"`
+	TotalPrice float64   `gorm:"column:total_price" json:"total_price"`
 	CreatedAt  time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt  time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

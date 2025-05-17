@@ -16,4 +16,5 @@ func Router(server *echo.Echo, container *container.Container) {
 	server.POST("/orders", order.Create)
 	server.GET("/orders", order.Gets)
 	server.GET("/orders/:uuid", order.Get)
+	server.PUT("/orders/:uuid/payment", order.UpdateStatusToPayment)
 }

@@ -9,6 +9,7 @@ type OrderHandler interface {
 	Create(c echo.Context) (err error)
 	Gets(c echo.Context) (err error)
 	Get(c echo.Context) (err error)
+	UpdateStatusToPayment(c echo.Context) (err error)
 }
 
 type handler struct {

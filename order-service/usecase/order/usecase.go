@@ -13,6 +13,7 @@ type OrderUsecase interface {
 	Craete(ctx context.Context, req CreateOrderRequest) (resp CreateOrderResponse, err error)
 	Gets(ctx context.Context, req GetOrdersRequest) (resp GetOrdersResponse, err error)
 	Get(ctx context.Context, req GetOrderRequest) (resp GetOrderResponse, err error)
+	UpdateStatusToPayment(ctx context.Context, req OrderStatusToPaymentRequest) (resp OrderStatusToPaymentResponse, err error)
 }
 
 type usecase struct {
