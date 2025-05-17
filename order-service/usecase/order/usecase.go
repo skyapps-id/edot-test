@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 
+	"github.com/RichardKnop/machinery/v1"
 	"github.com/skyapps-id/edot-test/order-service/config"
 	"github.com/skyapps-id/edot-test/order-service/repository"
 	"github.com/skyapps-id/edot-test/order-service/wrapper/product_service"
@@ -18,6 +19,7 @@ type OrderUsecase interface {
 
 type usecase struct {
 	cfg                  config.Config
+	worker               *machinery.Server
 	orderRepository      repository.Order
 	orderItemRepository  repository.OrderItem
 	productWrapper       product_service.ProductServiceWrapper
@@ -26,6 +28,7 @@ type usecase struct {
 
 func NewUsecase(
 	cfg config.Config,
+	worker *machinery.Server,
 	orderRepository repository.Order,
 	orderItemRepository repository.OrderItem,
 	productWrapper product_service.ProductServiceWrapper,
@@ -33,6 +36,7 @@ func NewUsecase(
 ) OrderUsecase {
 	return &usecase{
 		cfg:                  cfg,
+		worker:               worker,
 		orderRepository:      orderRepository,
 		orderItemRepository:  orderItemRepository,
 		productWrapper:       productWrapper,
