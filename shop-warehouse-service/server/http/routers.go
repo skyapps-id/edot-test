@@ -21,6 +21,7 @@ func Router(server *echo.Echo, container *container.Container) {
 	server.POST("/warehouses", warehouse.Create)
 	server.GET("/warehouses", warehouse.Gets)
 	server.GET("/warehouses/:uuid", warehouse.Get)
+	server.PUT("/warehouses/:uuid/:status", warehouse.WarehouseUpdateActive)
 	server.POST("/warehouses/products", warehouse.CreateWarehouseProduct)
 	server.GET("/internal/warehouses/product-stock/:uuid", warehouse.GetProductStock)
 	server.POST("/internal/warehouses/product-stock", warehouse.GetMaxQuantityByProductUUIDs)

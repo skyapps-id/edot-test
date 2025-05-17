@@ -17,6 +17,7 @@ type Warehouse interface {
 	Create(ctx context.Context, warehouse entity.Warehouse) (err error)
 	GetAll(ctx context.Context, name null.String, limit, offset int, sort string) (shop []entity.Warehouse, count int64, err error)
 	FindByUUID(ctx context.Context, uuid uuid.UUID) (warehouse entity.Warehouse, err error)
+	WarehouseUpdateActive(ctx context.Context, uuid uuid.UUID, isActive bool) (err error)
 }
 
 type warehouse struct {
@@ -76,6 +77,19 @@ func (r *warehouse) FindByUUID(ctx context.Context, uuid uuid.UUID) (warehouse e
 			zap.Error(err),
 			zap.String("module", "WarehouseRepository"),
 			zap.String("method", "FindByUUID"),
+		)
+	}
+
+	return
+}
+
+func (r *warehouse) WarehouseUpdateActive(ctx context.Context, uuid uuid.UUID, isActive bool) (err error) {
+	err = r.database.WithContext(ctx).Model(entity.Warehouse{}).Where("uuid = ?", uuid).Update("active", isActive).Error
+	if err != nil {
+		logger.Log.Error("Error in WarehouseRepository.WarehouseUpdateActive",
+			zap.Error(err),
+			zap.String("module", "WarehouseRepository"),
+			zap.String("method", "WarehouseUpdateActive"),
 		)
 	}
 

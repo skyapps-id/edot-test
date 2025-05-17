@@ -14,6 +14,7 @@ type WarehouseHandler interface {
 	ProductStockAddition(c echo.Context) (err error)
 	ProductStockReduction(c echo.Context) (err error)
 	GetProductStock(c echo.Context) (err error)
+	WarehouseUpdateActive(c echo.Context) (err error)
 }
 
 type handler struct {

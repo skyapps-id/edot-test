@@ -28,6 +28,7 @@ type GetWarehousesRequest struct {
 type DataWarehouses struct {
 	UUID      uuid.UUID `json:"uuid"`
 	Name      string    `json:"name"`
+	Active    bool      `json:"active"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -101,4 +102,13 @@ type GetProductStockRequest struct {
 type GetProductStockResponse struct {
 	ProductUUID uuid.UUID `json:"product_uuid"`
 	Quantity    int       `json:"quantity"`
+}
+
+type WarehouseUpdateActiveRequest struct {
+	UUID   uuid.UUID `param:"uuid"`
+	Status string    `param:"status"`
+}
+
+type WarehouseUpdateActiveResponse struct {
+	UUID uuid.UUID `json:"uuid"`
 }

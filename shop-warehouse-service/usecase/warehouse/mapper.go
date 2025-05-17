@@ -10,6 +10,7 @@ func (uc *usecase) warehousesMapper(results []entity.Warehouse) (resp []DataWare
 		warehouse := DataWarehouses{
 			UUID:      row.UUID,
 			Name:      row.Name,
+			Active:    row.Active,
 			CreatedAt: row.CreatedAt,
 			UpdatedAt: row.UpdatedAt,
 		}
