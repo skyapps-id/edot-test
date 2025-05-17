@@ -102,6 +102,13 @@ func (r *warehouseProduct) ProductStockAddition(ctx context.Context, products []
 	}
 
 	for _, row := range products {
+		var warehouse entity.Warehouse
+		err = r.database.WithContext(ctx).Where("uuid = ? AND active = true", row.WarehouseUUID).First(&warehouse).Error
+		if err != nil {
+			tx.Rollback()
+			return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("warehouse inactive"))
+		}
+
 		var warehouseProduct entity.WarehouseProduct
 		err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).
@@ -130,6 +137,13 @@ func (r *warehouseProduct) ProductStockReduction(ctx context.Context, products [
 	}
 
 	for _, row := range products {
+		var warehouse entity.Warehouse
+		err = r.database.WithContext(ctx).Where("uuid = ? AND active = true", row.WarehouseUUID).First(&warehouse).Error
+		if err != nil {
+			tx.Rollback()
+			return apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("warehouse inactive"))
+		}
+
 		var warehouseProduct entity.WarehouseProduct
 		err = tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 			Where("product_uuid = ? AND warehouse_uuid = ?", row.ProductUUID, row.WarehouseUUID).

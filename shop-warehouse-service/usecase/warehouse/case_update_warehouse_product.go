@@ -29,7 +29,7 @@ func (uc *usecase) ProductStockAddition(ctx context.Context, req ProductStockAdd
 
 	err = uc.warehouseProductRepository.ProductStockAddition(ctx, products)
 	if err != nil {
-		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to product stock addition"))
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to product stock addition %w", err))
 		return
 	}
 
@@ -56,7 +56,7 @@ func (uc *usecase) ProductStockReduction(ctx context.Context, req ProductStockRe
 
 	err = uc.warehouseProductRepository.ProductStockReduction(ctx, products)
 	if err != nil {
-		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to product stock reduction"))
+		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to product stock reduction %w", err))
 		return
 	}
 
