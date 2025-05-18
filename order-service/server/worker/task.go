@@ -9,10 +9,10 @@ import (
 )
 
 func SetupTask(container *container.Container) {
-	handler := task.SendWebhook
+	paymentTask := task.NewWrapper(container.OrderUsecase)
 
 	err := container.Worker.RegisterTasks(map[string]interface{}{
-		"send_webhook": handler,
+		"send_webhook": paymentTask.OrderCheck,
 	})
 	if err != nil {
 		log.Fatal("Failed to register tasks:", zap.Error(err))

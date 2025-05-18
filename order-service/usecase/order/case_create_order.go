@@ -2,7 +2,6 @@ package order
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -11,7 +10,6 @@ import (
 	"github.com/skyapps-id/edot-test/order-service/entity"
 	"github.com/skyapps-id/edot-test/order-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/order-service/pkg/constant"
-	"github.com/skyapps-id/edot-test/order-service/pkg/logger"
 	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
 	"github.com/skyapps-id/edot-test/order-service/wrapper/product_service"
 	"github.com/skyapps-id/edot-test/order-service/wrapper/shop_warehouse_service"
@@ -115,12 +113,18 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 
 	tx.Commit()
 
-	reqJSON, err := json.Marshal(productReduction)
-	if err != nil {
-		logger.Log.Error(err.Error())
+	payloadTask := OrderCancelRequest{
+		OrderUUID: order.UUID,
+	}
+	for _, row := range productReduction.Products {
+		payloadTask.Products = append(payloadTask.Products, DataProductStock{
+			ProductUUID:   row.ProductUUID,
+			WarehouseUUID: row.WarehouseUUID,
+			Quantity:      row.Quantity,
+		})
 	}
 
-	uc.SendTask(ctx, reqJSON)
+	uc.OrderCheck(ctx, payloadTask)
 
 	resp.OrderID = order.OrderID
 

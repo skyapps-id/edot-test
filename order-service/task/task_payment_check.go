@@ -1,31 +1,36 @@
 package task
 
 import (
-	"encoding/base64"
-	"encoding/json"
+	"context"
 
-	"github.com/labstack/gommon/log"
-	"github.com/skyapps-id/edot-test/order-service/wrapper/shop_warehouse_service"
+	"github.com/skyapps-id/edot-test/order-service/pkg/logger"
+	"github.com/skyapps-id/edot-test/order-service/usecase/order"
+	"go.uber.org/zap"
 )
 
-func DecodeToTask(msg string, task interface{}) (err error) {
-	decodedstg, err := base64.StdEncoding.DecodeString(msg)
-	if err != nil {
-		return
-	}
-	msgBytes := decodedstg
-	err = json.Unmarshal(msgBytes, task)
-	if err != nil {
-		return
-	}
-	return
+type PaymentTask interface {
+	OrderCheck(b64payload string) (err error)
 }
 
-func SendWebhook(b64payload string) (bool, error) {
-	payload := shop_warehouse_service.ProductStockReductionRequest{}
+type task struct {
+	orderUsecase order.OrderUsecase
+}
+
+func NewWrapper(orderUsecase order.OrderUsecase) PaymentTask {
+	return &task{
+		orderUsecase: orderUsecase,
+	}
+}
+
+func (t *task) OrderCheck(b64payload string) (err error) {
+	var payload order.OrderCancelRequest
 	DecodeToTask(b64payload, &payload)
 
-	log.Info("=========> Task Run", payload)
+	_, err = t.orderUsecase.OrderCancel(context.Background(), payload)
+	if err != nil {
+		logger.Log.Info("fail order cancel task", zap.Error(err))
+		return
+	}
 
-	return false, nil
+	return
 }

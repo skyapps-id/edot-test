@@ -15,6 +15,7 @@ type OrderUsecase interface {
 	Gets(ctx context.Context, req GetOrdersRequest) (resp GetOrdersResponse, err error)
 	Get(ctx context.Context, req GetOrderRequest) (resp GetOrderResponse, err error)
 	UpdateStatusToPayment(ctx context.Context, req OrderStatusToPaymentRequest) (resp OrderStatusToPaymentResponse, err error)
+	OrderCancel(ctx context.Context, req OrderCancelRequest) (resp OrderCancelResponse, err error)
 }
 
 type usecase struct {

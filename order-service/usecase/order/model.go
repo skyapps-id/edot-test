@@ -82,3 +82,18 @@ type OrderStatusToPaymentRequest struct {
 type OrderStatusToPaymentResponse struct {
 	UUID uuid.UUID `json:"uuid"`
 }
+
+type DataProductStock struct {
+	ProductUUID   uuid.UUID `json:"product_uuid"`
+	WarehouseUUID uuid.UUID `json:"warehouse_uuid"`
+	Quantity      int       `json:"quantity"`
+}
+
+type OrderCancelRequest struct {
+	OrderUUID uuid.UUID          `json:"order_uuid"`
+	Products  []DataProductStock `json:"products"`
+}
+
+type OrderCancelResponse struct {
+	UUID uuid.UUID `json:"uuid"`
+}

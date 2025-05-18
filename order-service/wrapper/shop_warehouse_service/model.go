@@ -33,6 +33,7 @@ type DataProductStock struct {
 	WarehouseUUID uuid.UUID `json:"warehouse_uuid"`
 	Quantity      int       `json:"quantity"`
 }
+
 type ProductStockAdditionRequest struct {
 	Products []DataProductStock `json:"products"`
 }
