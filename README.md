@@ -1,7 +1,7 @@
 # Edot Test
 
 ### Architecture
-![Alt text](arc.jpeg "profile-service")
+![Alt text](arc.jpeg "all-service")
 
 ### Tech Stack
 - Echo v4
@@ -19,25 +19,25 @@
 ### Run Service
 1. Run service user-service
     ```sh
-    $ go run main.go
+    $ make start
     ```
 2. Run service product-service
     ```sh
-    $ go run main.go
+    $ make start
     ```
 3. Run service shop-warehouse-service
     ```sh
-    $ go run main.go
+    $ make start
     ```
 4. Run service order-service
 
     terminal 1
     ```sh
-    $ go run main.go server
+    $ make start-server
     ```
     terminal 2
     ```sh
-    $ go run main.go worker
+    $ make start-worker
     ```
 
 ### Test API On Insomnia 
