@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/skyapps-id/edot-test/order-service/pkg/apperror"
+	"github.com/skyapps-id/edot-test/order-service/pkg/logger"
 	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
 	util "github.com/skyapps-id/edot-test/order-service/pkg/utils"
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ import (
 func (uc *usecase) Gets(ctx context.Context, req GetOrdersRequest) (resp GetOrdersResponse, err error) {
 	ctx, span := tracer.Define().Start(ctx, "OrderUsecase.Gets")
 	defer span.End()
+	logger.Log.Info("Health +++++++++++++++++++")
 
 	orders, count, err := uc.orderRepository.GetAll(
 		ctx,

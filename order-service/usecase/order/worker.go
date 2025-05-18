@@ -21,9 +21,9 @@ func (uc *usecase) OrderCheck(ctx context.Context, payload OrderCancelRequest) {
 	}
 
 	b64EncodedReq := base64.StdEncoding.EncodeToString(reqJSON)
-	eta := time.Now().UTC().Add(time.Second * 10)
+	eta := time.Now().UTC().Add(time.Second * 30)
 	task := tasks.Signature{
-		Name: "send_webhook",
+		Name: "order_check",
 		Args: []tasks.Arg{
 			{
 				Type:  "string",

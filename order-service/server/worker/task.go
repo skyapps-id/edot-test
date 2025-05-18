@@ -12,7 +12,7 @@ func SetupTask(container *container.Container) {
 	paymentTask := task.NewWrapper(container.OrderUsecase)
 
 	err := container.Worker.RegisterTasks(map[string]interface{}{
-		"send_webhook": paymentTask.OrderCheck,
+		"order_check": paymentTask.OrderCheck,
 	})
 	if err != nil {
 		log.Fatal("Failed to register tasks:", zap.Error(err))

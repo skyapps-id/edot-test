@@ -17,8 +17,6 @@ type Order interface {
 	Create(ctx context.Context, order entity.Order, orderItems []entity.OrderItem) (tx *gorm.DB, err error)
 	GetAll(ctx context.Context, name null.String, limit, offset int, sort string) (order []entity.Order, count int64, err error)
 	FindByUUID(ctx context.Context, uuid uuid.UUID) (order entity.Order, err error)
-	FindBySKU(ctx context.Context, sku string) (order entity.Order, err error)
-	FindByName(ctx context.Context, name string) (order entity.Order, err error)
 	UpdateStatus(ctx context.Context, uuid uuid.UUID, status string) (err error)
 }
 
@@ -94,32 +92,6 @@ func (r *order) FindByUUID(ctx context.Context, uuid uuid.UUID) (order entity.Or
 			zap.Error(err),
 			zap.String("module", "OrderRepository"),
 			zap.String("method", "FindByUUID"),
-		)
-	}
-
-	return
-}
-
-func (r *order) FindBySKU(ctx context.Context, sku string) (order entity.Order, err error) {
-	err = r.database.WithContext(ctx).Where("sku = ?", sku).First(&order).Error
-	if err != nil {
-		logger.Log.Error("Error in OrderRepository.FindBySKU",
-			zap.Error(err),
-			zap.String("module", "OrderRepository"),
-			zap.String("method", "FindBySKU"),
-		)
-	}
-
-	return
-}
-
-func (r *order) FindByName(ctx context.Context, name string) (order entity.Order, err error) {
-	err = r.database.WithContext(ctx).Where("name LIKE ?", name).First(&order).Error
-	if err != nil {
-		logger.Log.Error("Error in OrderRepository.FindByName",
-			zap.Error(err),
-			zap.String("module", "OrderRepository"),
-			zap.String("method", "FindByName"),
 		)
 	}
 
