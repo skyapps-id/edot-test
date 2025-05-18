@@ -21,7 +21,7 @@ func Setup() *Container {
 	config := config.Load()
 
 	// Machinery
-	worker := driver.GetMachineryServer()
+	worker := driver.GetMachineryServer(config)
 
 	// Database
 	database := driver.NewGormDatabase(config)

@@ -5,15 +5,16 @@ import (
 
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
+	app "github.com/skyapps-id/edot-test/order-service/config"
 	"go.uber.org/zap"
 )
 
-func GetMachineryServer() *machinery.Server {
+func GetMachineryServer(cfg app.Config) *machinery.Server {
 	cnf := &config.Config{
 		DefaultQueue:    "machinery_tasks",
 		ResultsExpireIn: 3600,
-		Broker:          "redis://localhost:6379",
-		ResultBackend:   "redis://localhost:6379",
+		Broker:          cfg.RedisUrl,
+		ResultBackend:   cfg.RedisUrl,
 		Redis: &config.RedisConfig{
 			MaxIdle:                3,
 			IdleTimeout:            240,

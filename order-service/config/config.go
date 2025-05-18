@@ -13,6 +13,7 @@ type Config struct {
 	HostOTLP                  string
 	DbUrl                     string
 	DbDebug                   bool
+	RedisUrl                  string
 	JwtSecret                 []byte
 	HostProductService        string
 	TokenProductService       string
@@ -33,6 +34,7 @@ func Load() Config {
 		Port:                      os.Getenv("PORT"),
 		HostOTLP:                  os.Getenv("HOST_OTLP"),
 		DbUrl:                     os.Getenv("DB_URL"),
+		RedisUrl:                  os.Getenv("REDIS_URL"),
 		DbDebug:                   dbDebug,
 		JwtSecret:                 []byte(os.Getenv("JWT_SECRET")),
 		HostProductService:        os.Getenv("HOST_PRODUCT_SERVICE"),
