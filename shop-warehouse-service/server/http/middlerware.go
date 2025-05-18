@@ -2,11 +2,13 @@ package http
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/pkg/apperror"
+	"github.com/skyapps-id/edot-test/shop-warehouse-service/pkg/auth"
 	"github.com/skyapps-id/edot-test/shop-warehouse-service/pkg/response"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -86,6 +88,32 @@ func ValidateStaticToken(expectedToken string) echo.MiddlewareFunc {
 					"error": "unauthorized",
 				})
 			}
+			return next(c)
+		}
+	}
+}
+
+func JWTMiddleware(secretKey []byte) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			authHeader := c.Request().Header.Get("Authorization")
+			if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+				return c.JSON(http.StatusUnauthorized, map[string]string{
+					"error": "missing or invalid Authorization header",
+				})
+			}
+
+			tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+
+			claims, err := auth.ParseJWT(tokenStr, secretKey)
+			if err != nil {
+				return c.JSON(http.StatusUnauthorized, map[string]string{
+					"error": "invalid or expired token",
+				})
+			}
+
+			c.Set("user_id", claims.UserID)
+
 			return next(c)
 		}
 	}

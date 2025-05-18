@@ -15,16 +15,22 @@ func Router(server *echo.Echo, container *container.Container) {
 	warehouse := warehouse.NewHandler(container.WarehouseUsecase)
 
 	server.GET("/", health.Health)
-	server.POST("/shops", shop.Create)
-	server.GET("/shops", shop.Gets)
-	server.GET("/shops/:uuid", shop.Get)
-	server.POST("/warehouses", warehouse.Create)
-	server.GET("/warehouses", warehouse.Gets)
-	server.GET("/warehouses/:uuid", warehouse.Get)
-	server.PUT("/warehouses/:uuid/:status", warehouse.WarehouseUpdateActive)
-	server.POST("/warehouses/products", warehouse.CreateWarehouseProduct)
-	server.PUT("/warehouses/product-restock", warehouse.ProductRestock)
-	server.PUT("/warehouses/product-transfer-stock", warehouse.TransferStock)
+
+	public := server.Group("")
+	public.Use(JWTMiddleware(container.Config.JwtSecret))
+	{
+		public.POST("/shops", shop.Create)
+		public.GET("/shops", shop.Gets)
+		public.GET("/shops/:uuid", shop.Get)
+		public.POST("/warehouses", warehouse.Create)
+		public.GET("/warehouses", warehouse.Gets)
+		public.GET("/warehouses/:uuid", warehouse.Get)
+		public.PUT("/warehouses/:uuid/:status", warehouse.WarehouseUpdateActive)
+		public.POST("/warehouses/products", warehouse.CreateWarehouseProduct)
+		public.PUT("/warehouses/product-restock", warehouse.ProductRestock)
+		public.PUT("/warehouses/product-transfer-stock", warehouse.TransferStock)
+	}
+
 	internal := server.Group("/internal")
 	internal.Use(ValidateStaticToken(container.Config.TokenInternal))
 	{

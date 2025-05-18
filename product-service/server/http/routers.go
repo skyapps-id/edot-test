@@ -13,9 +13,14 @@ func Router(server *echo.Echo, container *container.Container) {
 	product := product.NewHandler(container.ProductUsecase)
 
 	server.GET("/", health.Health)
-	server.POST("/products", product.Create)
-	server.GET("/products", product.Gets)
-	server.GET("/products/:uuid", product.Get)
+
+	public := server.Group("")
+	public.Use(JWTMiddleware(container.Config.JwtSecret))
+	{
+		public.POST("/products", product.Create)
+		public.GET("/products", product.Gets)
+		public.GET("/products/:uuid", product.Get)
+	}
 
 	internal := server.Group("/internal")
 	internal.Use(ValidateStaticToken(container.Config.TokenInternal))
