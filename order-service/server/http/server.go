@@ -17,6 +17,8 @@ import (
 	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
 	pkgValidator "github.com/skyapps-id/edot-test/order-service/pkg/validator"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 func StartHTTP(container *container.Container) {
@@ -26,6 +28,7 @@ func StartHTTP(container *container.Container) {
 
 	tracer := tracer.InitTracer(container.Config.HostOTLP, container.Config.AppName)
 	defer tracer(context.Background())
+	otel.SetTextMapPropagator(propagation.TraceContext{})
 
 	if err := logger.Init(); err != nil {
 		log.Fatalf("cannot initialize zap logger: %v", err)

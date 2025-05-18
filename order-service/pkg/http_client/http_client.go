@@ -2,9 +2,11 @@ package http_client
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/skyapps-id/edot-test/order-service/pkg/tracer"
 )
 
 type RestClient interface {
@@ -28,46 +30,36 @@ func NewRestClient(baseURL, token string) RestClient {
 }
 
 func (r *restyClient) Get(ctx context.Context, path string, header http.Header) ([]byte, int, error) {
-	resp, err := r.client.R().
-		SetContext(ctx).
-		SetHeaders(headerToMap(header)).
-		Get(path)
-	return responseValues(resp, err)
+	return r.call(ctx, http.MethodGet, path, header, nil)
 }
 
 func (r *restyClient) Post(ctx context.Context, path string, header http.Header, requestBody []byte) ([]byte, int, error) {
-	resp, err := r.client.R().
-		SetContext(ctx).
-		SetHeaders(headerToMap(header)).
-		SetBody(requestBody).
-		Post(path)
-	return responseValues(resp, err)
+	return r.call(ctx, http.MethodPost, path, header, requestBody)
 }
 
 func (r *restyClient) Put(ctx context.Context, path string, header http.Header, requestBody []byte) ([]byte, int, error) {
-	resp, err := r.client.R().
-		SetContext(ctx).
-		SetHeaders(headerToMap(header)).
-		SetBody(requestBody).
-		Put(path)
-	return responseValues(resp, err)
+	return r.call(ctx, http.MethodPut, path, header, requestBody)
 }
 
 func (r *restyClient) Patch(ctx context.Context, path string, header http.Header, requestBody []byte) ([]byte, int, error) {
-	resp, err := r.client.R().
-		SetContext(ctx).
-		SetHeaders(headerToMap(header)).
-		SetBody(requestBody).
-		Patch(path)
-	return responseValues(resp, err)
+	return r.call(ctx, http.MethodPatch, path, header, requestBody)
 }
 
 func (r *restyClient) Delete(ctx context.Context, path string, header http.Header, requestBody []byte) ([]byte, int, error) {
+	return r.call(ctx, http.MethodDelete, path, header, requestBody)
+}
+
+func (r *restyClient) call(ctx context.Context, method, path string, header http.Header, requestBody []byte,
+) (body []byte, status int, err error) {
+	ctx, span := tracer.Define().Start(ctx, fmt.Sprintf("%s %s", method, path))
+	defer span.End()
+
 	resp, err := r.client.R().
 		SetContext(ctx).
 		SetHeaders(headerToMap(header)).
+		SetHeaders(PopulateTraceparentHeadersFromOtelContext(span.SpanContext())).
 		SetBody(requestBody).
-		Delete(path)
+		Execute(method, path)
 	return responseValues(resp, err)
 }
 

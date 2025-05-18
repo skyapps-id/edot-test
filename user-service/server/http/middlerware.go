@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -8,6 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/skyapps-id/edot-test/user-service/pkg/apperror"
 	"github.com/skyapps-id/edot-test/user-service/pkg/response"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
@@ -48,7 +51,18 @@ func (cv *DataValidator) Validate(i interface{}) error {
 
 func TraceIDMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		traceID := trace.SpanContextFromContext(c.Request().Context()).TraceID().String()
+		// Incoming
+		traceparent := c.Request().Header.Get("traceparent")
+		if traceparent == "" {
+			c.Request().Context()
+		}
+		carrier := propagation.HeaderCarrier(c.Request().Header)
+		fmt.Println(carrier)
+		ctx := otel.GetTextMapPropagator().Extract(c.Request().Context(), carrier)
+		c.SetRequest(c.Request().WithContext(ctx))
+
+		// Outgoing
+		traceID := trace.SpanContextFromContext(ctx).TraceID().String()
 		c.Response().Header().Set("X-Trace-Id", traceID)
 		return next(c)
 	}
