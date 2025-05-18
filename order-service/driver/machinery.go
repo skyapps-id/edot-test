@@ -5,7 +5,6 @@ import (
 
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
-	"github.com/skyapps-id/edot-test/order-service/task"
 	"go.uber.org/zap"
 )
 
@@ -29,13 +28,6 @@ func GetMachineryServer() *machinery.Server {
 	server, err := machinery.NewServer(cnf)
 	if err != nil {
 		log.Fatal("Failed to create Machinery server:", zap.Error(err))
-	}
-
-	err = server.RegisterTasks(map[string]interface{}{
-		"send_webhook": task.SendWebhook,
-	})
-	if err != nil {
-		log.Fatal("Failed to register tasks:", zap.Error(err))
 	}
 
 	return server

@@ -32,7 +32,7 @@ func main() {
 			Name:  "worker",
 			Usage: "Run the worker that will consume tasks",
 			Action: func(c *cli.Context) {
-				worker.StartWorker(container.Worker)
+				worker.StartWorker(container)
 			},
 		},
 	}

@@ -5,12 +5,8 @@ import (
 	"encoding/json"
 
 	"github.com/labstack/gommon/log"
+	"github.com/skyapps-id/edot-test/order-service/wrapper/shop_warehouse_service"
 )
-
-type Payload struct {
-	Url  string `json:"url"`
-	Body string `json:"body"`
-}
 
 func DecodeToTask(msg string, task interface{}) (err error) {
 	decodedstg, err := base64.StdEncoding.DecodeString(msg)
@@ -26,7 +22,7 @@ func DecodeToTask(msg string, task interface{}) (err error) {
 }
 
 func SendWebhook(b64payload string) (bool, error) {
-	payload := Payload{}
+	payload := shop_warehouse_service.ProductStockReductionRequest{}
 	DecodeToTask(b64payload, &payload)
 
 	log.Info("=========> Task Run", payload)

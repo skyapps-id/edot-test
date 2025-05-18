@@ -1,10 +1,14 @@
 package worker
 
-import "github.com/RichardKnop/machinery/v1"
+import (
+	"github.com/skyapps-id/edot-test/order-service/container"
+)
 
-func StartWorker(taskserver *machinery.Server) error {
+func StartWorker(container *container.Container) error {
 
-	worker := taskserver.NewWorker("machinery_worker", 3)
+	SetupTask(container)
+
+	worker := container.Worker.NewWorker("machinery_worker", 3)
 	if err := worker.Launch(); err != nil {
 		return err
 	}
