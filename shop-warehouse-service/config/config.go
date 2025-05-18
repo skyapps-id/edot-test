@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
-	AppName   string
-	Port      string
-	HostOTLP  string
-	DbUrl     string
-	DbDebug   bool
-	JwtSecret []byte
+	AppName       string
+	Port          string
+	HostOTLP      string
+	DbUrl         string
+	DbDebug       bool
+	JwtSecret     []byte
+	TokenInternal string
 }
 
 func Load() Config {
@@ -25,11 +26,12 @@ func Load() Config {
 	dbDebug, _ := strconv.ParseBool(os.Getenv("DB_DEBUG"))
 
 	return Config{
-		AppName:   os.Getenv("APP_NAME"),
-		Port:      os.Getenv("PORT"),
-		HostOTLP:  os.Getenv("HOST_OTLP"),
-		DbUrl:     os.Getenv("DB_URL"),
-		DbDebug:   dbDebug,
-		JwtSecret: []byte(os.Getenv("JWT_SECRET")),
+		AppName:       os.Getenv("APP_NAME"),
+		Port:          os.Getenv("PORT"),
+		HostOTLP:      os.Getenv("HOST_OTLP"),
+		DbUrl:         os.Getenv("DB_URL"),
+		DbDebug:       dbDebug,
+		JwtSecret:     []byte(os.Getenv("JWT_SECRET")),
+		TokenInternal: os.Getenv("TOKEN_INTERNAL"),
 	}
 }

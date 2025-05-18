@@ -76,3 +76,17 @@ func ErrorHandler() echo.HTTPErrorHandler {
 		_ = c.JSON(status, resp)
 	}
 }
+
+func ValidateStaticToken(expectedToken string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			token := c.Request().Header.Get("Static-Token")
+			if token == "" || token != expectedToken {
+				return c.JSON(http.StatusUnauthorized, map[string]string{
+					"error": "unauthorized",
+				})
+			}
+			return next(c)
+		}
+	}
+}

@@ -25,8 +25,13 @@ func Router(server *echo.Echo, container *container.Container) {
 	server.POST("/warehouses/products", warehouse.CreateWarehouseProduct)
 	server.PUT("/warehouses/product-restock", warehouse.ProductRestock)
 	server.PUT("/warehouses/product-transfer-stock", warehouse.TransferStock)
-	server.GET("/internal/warehouses/product-stock/:uuid", warehouse.GetProductStock)
-	server.POST("/internal/warehouses/product-stock", warehouse.GetMaxQuantityByProductUUIDs)
-	server.POST("/internal/warehouses/product-stock-addition", warehouse.ProductStockAddition)
-	server.POST("/internal/warehouses/product-stock-reduction", warehouse.ProductStockReduction)
+	internal := server.Group("/internal")
+	internal.Use(ValidateStaticToken(container.Config.TokenInternal))
+	{
+		internal.GET("/warehouses/product-stock/:uuid", warehouse.GetProductStock)
+		internal.POST("/warehouses/product-stock", warehouse.GetMaxQuantityByProductUUIDs)
+		internal.POST("/warehouses/product-stock-addition", warehouse.ProductStockAddition)
+		internal.POST("/warehouses/product-stock-reduction", warehouse.ProductStockReduction)
+	}
+
 }

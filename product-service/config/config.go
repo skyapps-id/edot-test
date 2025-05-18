@@ -13,6 +13,7 @@ type Config struct {
 	HostOTLP                  string
 	DbUrl                     string
 	DbDebug                   bool
+	TokenInternal             string
 	JwtSecret                 []byte
 	HostShopWarehouseService  string
 	TokenShopWarehouseService string
@@ -32,6 +33,7 @@ func Load() Config {
 		HostOTLP:                  os.Getenv("HOST_OTLP"),
 		DbUrl:                     os.Getenv("DB_URL"),
 		DbDebug:                   dbDebug,
+		TokenInternal:             os.Getenv("TOKEN_INTERNAL"),
 		JwtSecret:                 []byte(os.Getenv("JWT_SECRET")),
 		HostShopWarehouseService:  os.Getenv("HOST_SHOP_WAREHOUSE_SERVICE"),
 		TokenShopWarehouseService: os.Getenv("TOKEN_SHOP_WAREHOUSE_SERVICE"),
