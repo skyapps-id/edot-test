@@ -1,65 +1,53 @@
-User
- └─> [User Service] ─────────────┐
-                                 ├─> Authenticated Access
-Product Viewer                   │
- └─> [Product Service] <────────┴─> Get product list (stock info via Warehouse)
-                                 
-Buyer
- └─> [Order Service] ──────────┐
-      │                        └─> Reserve/Release stock via Warehouse Service
-      └─> [Warehouse Service] ──> Manage stock, transfer, active/inactive
+# Edot Test
 
-Admin
- └─> [Shop Service] ──────────┐
-      └─> Manage warehouse map └─> [Warehouse Service]
+### Architecture
+![Alt text](arc.jpeg "profile-service")
+
+### Tech Stack
+- Echo v4
+- Postgresql
+- Jwt
+- Machinery for worker
+
+### Quick Installation Database
+1. Run all database service
+    ```sh
+    $ docker compose up -d
+    ```
+2. Restore all file migration.sql in folder per-service databse
+
+### Run Service
+1. Run service user-service
+    ```sh
+    $ go run main.go
+    ```
+2. Run service product-service
+    ```sh
+    $ go run main.go
+    ```
+3. Run service shop-warehouse-service
+    ```sh
+    $ go run main.go
+    ```
+4. Run service order-service
+
+    terminal 1
+    ```sh
+    $ go run main.go server
+    ```
+    terminal 2
+    ```sh
+    $ go run main.go worker
+    ```
+
+### Test API On Insomnia 
+1. Import file Insomnia_2025-05-18.json
 
 
-POST /orders/checkout
-POST /orders/:id/payment
-POST /orders/:id/cancel
-                                        
-[User]
-   |
-   v
-[Login via User Service]
-   |
-   v
-[View Products - Product Service]
-   |
-   v
-[Click Checkout - Order Service]
-   |
-   v
-[Order Service: Ambil info produk & kuantitas]
-   |
-   v
-[Order Service → Shop Service]
-   |
-   v
-Shop Service:
-- Cari Shop dari produk terkait
-- Dapatkan daftar Warehouse aktif milik Shop
-   |
-   v
-[Order Service → Warehouse Service]
-   |
-   v
-Warehouse Service:
-- Cek ketersediaan stok di gudang aktif
-- Reserve (lock) stok
-   |
-   v
-[Order Service]
-   |
-   v
-[Create Order]
-   |
-   v
-[Tunggu Pembayaran]
-   |
-   v
-(Timeout?)
- ├── No  → [Order Berhasil]
- └── Yes → [Order Dibatalkan → Release Stok via Warehouse Service]
+### Contact
+https://www.linkedin.com/in/aji-indra-jaya
 
- 
+License
+----
+
+MIT
