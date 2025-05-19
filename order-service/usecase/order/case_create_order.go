@@ -126,6 +126,7 @@ func (uc *usecase) Craete(ctx context.Context, req CreateOrderRequest) (resp Cre
 
 	uc.OrderCheck(ctx, payloadTask)
 
+	resp.UUID = order.UUID
 	resp.OrderID = order.OrderID
 
 	return

@@ -27,7 +27,8 @@ func (t CreateOrderRequest) GetProductUUIDs() (uuids []uuid.UUID) {
 }
 
 type CreateOrderResponse struct {
-	OrderID string `json:"order_id"`
+	UUID    uuid.UUID `json:"uuid"`
+	OrderID string    `json:"order_id"`
 }
 
 type GetOrdersRequest struct {
