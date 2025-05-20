@@ -100,7 +100,6 @@ func (uc *usecase) ProductStockReduction(ctx context.Context, req ProductStockRe
 
 	err = uc.warehouseProductRepository.ProductStockReduction(ctx, products)
 	if err != nil {
-		err = apperror.New(http.StatusInternalServerError, fmt.Errorf("fail to product stock reduction err %w", err))
 		return
 	}
 
