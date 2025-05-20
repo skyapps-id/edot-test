@@ -64,7 +64,7 @@ func (uc *usecase) Login(ctx context.Context, req LoginRequest) (resp LoginRespo
 		return
 	}
 
-	token, err := auth.GenerateJWT(user.UUID.String(), uc.cfg.JwtSecret)
+	token, err := auth.GenerateJWT(user.UUID, uc.cfg.JwtSecret, uc.cfg.AppName)
 	if err != nil {
 		err = apperror.New(http.StatusUnprocessableEntity, err)
 	}
