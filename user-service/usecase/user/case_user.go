@@ -60,7 +60,8 @@ func (uc *usecase) Login(ctx context.Context, req LoginRequest) (resp LoginRespo
 
 	valid := auth.CheckPassword(user.Password, req.Password)
 	if !valid {
-		err = apperror.New(http.StatusUnprocessableEntity, fmt.Errorf("wrong password"))
+		err = apperror.New(http.StatusUnauthorized, fmt.Errorf("wrong password"))
+		return
 	}
 
 	token, err := auth.GenerateJWT(user.UUID.String(), uc.cfg.JwtSecret)
