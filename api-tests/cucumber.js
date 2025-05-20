@@ -1,3 +1,7 @@
 module.exports = {
-  default: '--require step_definitions/**/*.js features/**/*.feature',
+  default: {
+    require: ['features/support/*.js'],
+    format: ['progress', 'html:reports/cucumber-report.html'],
+    publishQuiet: true,
+  },
 };

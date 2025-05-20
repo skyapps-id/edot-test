@@ -1,4 +1,4 @@
-Feature: Login and Get Product API Integration
+Feature: Login and Get Product
 
   Scenario: Successful login and product fetch
     Given I log in with id "081574040777" and password "123"
