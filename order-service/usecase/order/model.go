@@ -14,7 +14,7 @@ type OrderItemsRequest struct {
 }
 
 type CreateOrderRequest struct {
-	UserUUID   uuid.UUID           `json:"user_uuid"`
+	UserUUID   uuid.UUID           `json:"-"`
 	Orderitems []OrderItemsRequest `json:"order_items" validate:"required"`
 }
 
