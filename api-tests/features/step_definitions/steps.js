@@ -25,9 +25,9 @@ When('I request the product with UUID {string}', async function (productUuid) {
   });
 });
 
-When('I create an order', async function () {
+When('I create an order product {string} quantity {int}', async function (productUuid, qty) {
   const payload = {
-    order_items: [{ product_uuid: 'cdc416b0-796c-48db-89ab-af101ceefe80', quantity: 1 }],
+    order_items: [{ product_uuid: productUuid, quantity: qty }],
   };
 
   const res = await axios.post('http://localhost:8084/orders', payload, {
@@ -46,11 +46,14 @@ When('I fetch the order by UUID', async function () {
     headers: {
       Authorization: `Bearer ${this.token}`,
       'Content-Type': 'application/json',
-      traceparent: '00-3bdb8ae136d0bba9da57d4e603b140cf-379ace2f519c3fed-01',
     },
   });
 });
 
 Then('the response status should be {int}', function (statusCode) {
   expect(this.response.status).to.equal(statusCode);
+});
+
+Then('product stock is available', function () {
+  expect(this.response.data.data.stock).to.greaterThan(0);
 });
